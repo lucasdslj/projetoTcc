@@ -1,0 +1,65 @@
+page-battle-screen {
+    
+  #map {
+    height: 65%;
+  }
+
+   [cards] {
+    .grid-full ion-col {
+        flex: 0 0 50%;
+        max-width: 80%;
+        padding: 1px 15;
+    }
+    
+    .col {
+        padding: 1px 0;
+    }
+    .card {
+        margin: 1% 1%;
+        width: calc(100% - 6px);
+        height: 85%;       
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.10);
+        border-radius: 4px;
+      
+    }
+}
+
+.img{
+     flex: 0 0 50%;
+    max-width: 60%;
+     padding: 5px 15;
+}
+
+.col1{
+    width: 40%
+}
+.col2{
+    width: 60%
+}
+
+.progress-bar span {
+    display: inline-block;
+    padding: 2%;
+    height: 40%;
+    border-radius: 3px;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset;
+    transition: width .4s ease-in-out;    
+}
+.blue span {
+    background-color: #e3345a;  
+     
+}
+
+.orange span {
+      background-color: #fe23cf;
+      background-image: linear-gradient(top, #fecf23, #fd9215);  
+}   
+
+.green span {
+      background-color: #a5df41;
+      background-image: linear-gradient(top, #a5df41, #4ca916);  
+}
+
+
+
+}

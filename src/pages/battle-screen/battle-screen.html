@@ -1,0 +1,169 @@
+
+<ion-header color='blue'>
+
+  <ion-navbar color="primary">
+    <ion-title align="center">battle Screen</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <div cards>
+  
+    <div class="grid-full">
+      <ion-row>
+        <ion-col>
+          <ion-card *ngFor="let dataP of dataPlayer">
+            <ion-grid>
+              <ion-row >
+                <ion-col>
+                  <div align="left" [ngSwitch]="dataP.patent">
+                    <img src="assets/imgs/cabo.png" *ngSwitchCase="'Cabo'" class="img" />
+                    <img src="assets/imgs/sargento.png" *ngSwitchCase="'Sargento'" class="img" />
+                    <img src="assets/imgs/tenente.png" *ngSwitchCase="'Tenente'" class="img" />
+                    <img src="assets/imgs/capitao.png" *ngSwitchCase="'Capitão'" class="img" />
+                    <img src="assets/imgs/almirante.png" *ngSwitchCase="'Almirante'" class="img" />
+                    <h3 align="left"> <b> Lv. {{dataP.level}}   </b></h3>
+                  </div>
+                </ion-col >
+                <ion-col class="col2" >
+                  <h3>
+                    <b>{{dataP.user_name}}</b>
+                  </h3>
+                    
+                    <h4>
+                      Life: 
+                    </h4>
+                 
+                  <div class="progress-bar blue stripes" >
+                    <span [style.width]=amountLifeP1></span>  
+                  </div>
+                
+              </ion-col>
+                
+             
+
+              <ion-col>
+              
+               
+              </ion-col>
+              <ion-col>
+                
+              
+                
+              
+              </ion-col>
+            </ion-row>
+            </ion-grid>
+            
+          </ion-card>
+        </ion-col>
+
+  
+        <ion-col>
+          <ion-card *ngFor="let opPlayer of dataOpponentPlayer">
+            <ion-grid>
+              <ion-row>
+                <ion-col >
+                  <div align="left" [ngSwitch]="opPlayer.patent">
+
+                    
+                    <img src="assets/imgs/cabo.png"  *ngSwitchCase="'Cabo'" class="img" />
+                    <img src="assets/imgs/sargento.png" *ngSwitchCase="'Sargento'" class="img" />
+                    <img src="assets/imgs/tenente.png" *ngSwitchCase="'Tenente'"  class="img"/>
+                    <img src="assets/imgs/capitao.png" *ngSwitchCase="'Capitão'" class="img" />
+                    <img src="assets/imgs/almirante.png" *ngSwitchCase="'Almirante'" class="img" />
+                    <h3 align="left">
+                      <b> Lv. {{opPlayer.level}} </b>
+                    </h3>
+                  </div>
+                </ion-col>
+                <ion-col class="col2">
+                  <h3>
+                    <b>{{user_name_adversary}}</b>
+                  </h3>
+        
+                  <h4>
+                    Life: 
+                  </h4>
+        
+                  <div class="progress-bar blue stripes">
+                    <span [style.width]=amountLifeP2></span>
+                  </div>
+        
+                </ion-col>
+        
+        
+        
+                <ion-col>
+        
+        
+                </ion-col>
+                <ion-col>
+
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+        
+          </ion-card>
+        </ion-col>
+  
+      </ion-row>
+    </div>
+  
+  </div>
+
+    <div #map id="map"></div>
+
+    <div cards>
+      <ion-row>
+        <ion-col>
+          <ion-row>
+
+
+          </ion-row>
+          <ion-row>
+           <!--  <button ion-button (click)="open()" block>stop</button> -->
+            <br>
+            <h4><b>Bombas: {{amountBomb}}</b></h4>
+            <h4><b>Tempo: {{time}}</b> </h4>
+
+          </ion-row>
+   
+     
+      </ion-col>
+
+   
+      <ion-col>
+        <div width="100%">
+            <form [formGroup]="formBattle" (ngSubmit)="playerBombThrow(coordinates)">
+              <ion-item>
+                <ion-label color="primary" floating>X</ion-label>
+                <ion-input type="text" [(ngModel)]="coordinates.x" name="coordinateX" formControlName="coordinateX"></ion-input>
+              </ion-item>
+              <h6 *ngIf="controlX" class="error"> {{controlXMes}}</h6>
+              <ion-item>
+                <ion-label color="primary" floating>Y</ion-label>
+                <ion-input type="text" [(ngModel)]="coordinates.y" name="coordinateY" formControlName="coordinateY"></ion-input>
+              </ion-item>
+              <button [disabled]="formBattle.invalid" ion-button type="submit"  [disabled]="btnDisable" block>atirar</button>
+            
+            </form>
+          <!--  <button ion-button (click)="test()" block>stop</button>-->
+         
+      
+          </div>
+     </ion-col>
+    </ion-row>
+
+  </div>
+  <!--  <button ion-button navPop >Voltar!</button> -->
+
+</ion-content>
+
+
+
+
+
+

@@ -1,0 +1,78 @@
+<!--
+  Generated template for the SignUpScreenPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>signUp-screen</ion-title>
+  </ion-navbar>
+
+</ion-header>
+<ion-content padding>
+
+<form [formGroup]="formUserName">
+      <ion-row>
+        <ion-col>
+          <ion-item>
+            <ion-label color="primary" floating>Nick Name</ion-label>
+        
+              <ion-input name="user_name" [(ngModel)]="user_name"  formControlName="user_name" > </ion-input>
+          </ion-item>
+        </ion-col>
+        
+        <ion-col>
+          <ion-row>
+            <br>
+          </ion-row>
+          <ion-row>
+             <button ion-button [disabled]="formUserName.invalid" item-right small round (click)="verifyNickname(user_name)" >verificar</button>
+          </ion-row> 
+        </ion-col>
+      </ion-row>
+
+
+
+
+  <form [formGroup]="formSignUp" >
+    <ion-list>
+      <ion-item>
+        <ion-label color="primary" floating>Nome</ion-label>
+      
+        <ion-input name="name" [(ngModel)]="name" formControlName="name"> </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label color="primary" floating>Email</ion-label>
+        
+        <ion-input name="email" [(ngModel)]="email" formControlName="email"> </ion-input>
+      </ion-item>
+
+      <ion-item >
+        <br>
+        <ion-label color="primary" floating >Sexo</ion-label>
+        <ion-select [(ngModel)]="sex" submitText="Ok" cancelText="Cancelar" formControlName="sex" color="primary">
+          <ion-option value="masculino" color="primary">Masculino</ion-option>
+          <ion-option value="feminino" color="primary">Feminino</ion-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        
+        <ion-label color="primary" floating>Password</ion-label>
+      
+        <ion-input  [type]="password_type" name="password" [(ngModel)]="password" formControlName="password" required ></ion-input>
+        <button ion-button  item-right (click)="togglePasswordMode()" round >mostrar </button>
+      
+      </ion-item>
+    
+    </ion-list>
+    </form>
+  </form>
+  <button ion-button color="secondary" [disabled]="formSignUp.invalid" (click)="signUp(user_name, name, email, sex, password)" round outline>Registrar</button>
+  
+ 
+
+</ion-content>

@@ -1,0 +1,151 @@
+<!--
+  Generated template for the ListAdversaryScreenPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title align="center">Adversários</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+  <div>
+    <ion-segment [(ngModel)]="typeOfBattle">
+      <ion-segment-button value="newBattle">
+        Batalhar
+      </ion-segment-button>
+      <ion-segment-button value="rematch">
+        Revanches
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+ 
+  
+
+
+  <div [ngSwitch]="typeOfBattle">
+    <ion-list *ngSwitchCase="'newBattle'" >
+      <ion-item *ngFor="let opPlayer of opponentPlayers" >
+            <ion-card [ngSwitch]="opPlayer.patent">
+              
+              <ion-grid >
+                <ion-row >
+                  <ion-col> 
+                    
+                    <img src="assets/imgs/cabo.png" *ngSwitchCase="'Cabo'" class="img" />
+                    <img src="assets/imgs/sargento.png" *ngSwitchCase="'Sargento'" class="img" />
+                    <img src="assets/imgs/tenente.png" *ngSwitchCase="'Tenente'" class="img" />
+                    <img src="assets/imgs/capitao.png" *ngSwitchCase="'Capitão'" class="img" />
+                    <img src="assets/imgs/almirante.png" *ngSwitchCase="'Almirante'" class="img" />
+                    <h3 align="center"> <b> Lv. {{opPlayer.level}}  </b></h3>
+                    
+                  </ion-col>
+                  <ion-col>
+  
+                    <h4>
+                      <h2>
+                        <b>{{opPlayer.patent}} {{opPlayer.user_name}}  </b>
+                      </h2> 
+                     
+                      <h4>{{opPlayer.ship}}</h4> <br> 
+                      <font color="red"> Ataque: {{opPlayer.attack_force}} </font> <h4> <font color="#1E90FF">Defesa: {{opPlayer.defense_force}} </font></h4>
+                    </h4>
+                    </ion-col>
+                  <ion-col>
+                    <ion-row>
+                           <br><br><br>
+                    </ion-row>
+                    
+                    <ion-row> 
+                    <button ion-button (click)="battleScreenOn(opPlayer, 'newBattle')" color="danger" round> Desafiar </button>
+                   
+                    </ion-row>
+                   
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+
+            </ion-card>
+
+      </ion-item>
+     
+    </ion-list>
+  
+
+
+    <ion-list *ngSwitchCase="'rematch'">
+    
+    <div [ngSwitch]="stateRematch">
+      
+        <ion-item *ngFor="let opPlayerR of opponentPlayersRematch"  >
+          <ion-card [ngSwitch]="opPlayerR.patent">
+        
+            <ion-grid>
+              <ion-row>
+                <ion-col>
+        
+                  <img src="assets/imgs/cabo.png" *ngSwitchCase="'Cabo'" class="img" />
+                  <img src="assets/imgs/sargento.png" *ngSwitchCase="'Sargento'" class="img" />
+                  <img src="assets/imgs/tenente.png" *ngSwitchCase="'Tenente'" class="img" />
+                  <img src="assets/imgs/capitao.png" *ngSwitchCase="'Capitão'" class="img" />
+                  <img src="assets/imgs/almirante.png" *ngSwitchCase="'Almirante'" class="img" />
+                  <h3 align="center">
+                    <b> Lv. {{opPlayerR.level}} </b>
+                  </h3>
+        
+                </ion-col>
+                <ion-col>
+        
+                  <h4>
+                    <h2>
+                      <b>{{opPlayerR.patent}} {{opPlayerR.player_adversary}} </b>
+                    </h2>
+        
+                    <h4>{{opPlayerR.ship}}</h4>
+                    <br>
+                    <font color="red"> Ataque: {{opPlayerR.attack_force}} </font>
+                    <h4>
+                      <font color="#1E90FF">Defesa: {{opPlayerR.defense_force}} </font>
+                    </h4>
+
+                    <h4>
+                      <font color="#FF2288">Vitórias: {{opPlayerR.amount_victories}} </font>
+                    </h4>
+                  </h4>
+                </ion-col>
+                <ion-col>
+                  <ion-row>
+                    <br>
+                    <br>
+                    <br>
+                  </ion-row>
+        
+                  <ion-row>
+                    <button ion-button (click)="battleScreenOn(opPlayerR, 'rematch')" color="danger" round> Desafiar </button>
+        
+                  </ion-row>
+        
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+        
+          </ion-card>
+        
+        
+        </ion-item>
+     
+      </div>
+    </ion-list>
+  
+  </div>
+
+
+</ion-content>
+
+

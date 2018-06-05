@@ -1,0 +1,31 @@
+page-modal-battle-screen {
+     background-color: rgba(0, 0, 0, 0.5);
+    ion-content.content{
+        top: 20%;
+        left: 10%;
+
+        width: 80%;
+        height: 50%;
+        border-radius: 10px;
+        .scroll-content {
+            border-radius: 20px;
+        }
+    }
+
+      .img{
+       
+         flex: 0 0 50%;
+         max-width: 50%;
+      }
+
+      .div{
+          max-width: 100%;
+      }
+      .img2{
+       
+         flex: 0 0 50%;
+         max-width: 28%;
+      }
+      
+
+}

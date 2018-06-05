@@ -1,0 +1,61 @@
+
+
+
+
+<ion-content padding>
+<div [ngSwitch]="outType">
+
+<div class="div" *ngSwitchCase="'defeat'">
+  <h2 align="center">{{defeatMessage}}</h2>
+  <div align="center">
+    <img src="assets/imgs/sad.png" class="img" />
+  </div >
+  <h1 align="center">Você Perdeu!</h1>
+  <button  ion-button (click)="closeModal()" block full>Sair</button>
+</div>
+
+<div class="div"  *ngSwitchCase="'victory'">
+  <h2 align="center">Você Venceu!</h2>
+   <div align="center">
+  <img src="assets/imgs/trofeu.gif" class="img2" />
+  </div>
+ 
+  <progress-bar [progress]="loadProgress" [xpAmount]="xpAmount"></progress-bar>
+  
+  <ion-row>
+    <ion-col>
+      <b>Lv. 1</b>
+    </ion-col>
+    <ion-col>
+        
+    </ion-col>
+    
+    <ion-col>
+      <p align="center">Parabéns +{{xpGained}}xp</p>
+    </ion-col>
+    <ion-col>
+    
+    </ion-col>
+    <ion-col>
+      <b>Lv. 2</b>
+    </ion-col>
+  <button ion-button (click)="closeModal()" block full>Sair</button>
+  </ion-row>
+  
+
+
+</div>
+
+<div class="div" *ngSwitchCase="'levelUp'">
+  <h2 align="center"><font face="Helvetica"> Você subiu de level!</font></h2>
+  <div align="center">
+    <img src="assets/imgs/levelUp.gif" class="img" />
+  </div >
+  <br> <br>
+  <h3 align="center"> <font face="Helvetica">Agora você é Lv. {{level}}</font> </h3>
+  <button  ion-button (click)="closeModal()" block full>Sair</button>
+</div>
+
+</div>
+
+</ion-content>

@@ -1,0 +1,253 @@
+import { Component } from '@angular/core';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { HomePage } from '../home/home';
+
+import { Http } from '@angular/http';
+import 'rxjs/add/operator/toPromise';
+import { JsonPipe } from '@angular/common';
+
+import { mapStyle } from './mapStyle';
+import { mapStyle2 } from './mapStyle';
+
+
+/**
+ * Generated class for the BattleScreenPage page.
+ *
+ * See https://ionicframework.com/docs/components/#navigation for more info on
+ * Ionic pages and navigation.
+ */
+declare var google;
+
+@IonicPage()
+@Component({
+  selector: 'page-battle-screen',
+  templateUrl: 'battle-screen.html',
+})
+export class BattleScreenPage {
+  
+
+  constructor(public navCtrl: NavController, public navParams: NavParams, public http: Http) {
+  }
+
+  map: any;
+  homePage = HomePage;
+  mapStyle1 = mapStyle;
+  mapStyle2 = mapStyle2;
+  public battleData = [];
+
+  private url: string = 'http://localhost:8000/api/boardcomposition/jp26/erick26';
+
+  //Função de arredondamento
+  round(value, precision) {
+    var multiplier = Math.pow(10, precision || 0);
+    return Math.round(value * multiplier) / multiplier;
+  }
+
+  drawPolyline(lat1, lng1, lat2, lng2, color){
+    var pointLines = new Array();
+    
+    pointLines.push({ lat: lat1, lng: lng1 });
+    pointLines.push({ lat: lat2, lng: lng2 });
+    var poly = new google.maps.Polyline({
+      path: pointLines,
+      strokeColor: color,
+      strokeOpacity: 1.0,
+      strokeWeight: 2
+    });
+    poly.setMap(this.map);
+  }
+  
+  markerBoard(lat, lng, icon){
+    var position = new google.maps.LatLng(lat, lng);
+
+
+   var marker = new google.maps.Marker({
+      position: position,
+      map: this.map,
+
+      icon: { url: 'assets/imgs/'+icon }
+
+  });
+}
+  ionViewDidEnter() {
+    
+    this.http.get(this.url).toPromise().then((response) => {
+      this.battleData.push(response.json());
+      this.battleData = this.battleData[0]
+
+     console.log(this.battleData);
+
+      for (var j = 0; j < this.battleData[0].length; j++) {
+        for (var i = 0; i < this.battleData[0].length; i++) {
+
+          //Normatização do json => 6 casas decimais
+          //Tabuleiro
+          this.battleData[0][j][i][0] = this.round(this.battleData[0][j][i][0], 6);
+          this.battleData[0][j][i][1] = this.round(this.battleData[0][j][i][1], 6);
+          
+        }
+        //Eixo X e Eixo Y
+        this.battleData[5][0][j] = this.round(this.battleData[5][0][j], 6);
+        this.battleData[6][0][j] = this.round(this.battleData[6][0][j], 6);
+      }
+
+      //Coordenadas Jogadores
+      for (var i = 0; i < 2; i++) {
+        //Player 1
+        this.battleData[1][i] = this.round(this.battleData[1][i], 6);
+        //Player 2
+        this.battleData[2][i] = this.round(this.battleData[2][i], 6);
+      }
+
+      console.log("após");
+      console.log(this.battleData[7]);
+      this.createMap(this.battleData[0], this.battleData[5], this.battleData[6], this.battleData[7]);
+      this.markerBoard(this.battleData[1][0], this.battleData[1][1],'barco1.png' );
+      this.markerBoard(this.battleData[2][0], this.battleData[2][1], 'barco2.png');
+    })
+    
+  }
+
+
+  createMap(board, axisX, axisY, T) {
+
+    
+    var edgeBord = [];   
+    var position, marker, square, markerIcon, aux = board.length - 1; 
+    var colorBoard = '#00BFFF', colorAxis = '#000000';
+   
+    //Definindo pontos da borda do Tabuleiro e auxiliando o cálculo do baricentro
+    var bounds = new google.maps.LatLngBounds();
+
+    edgeBord.push({ lat: board[0][0][0], lng: board[0][0][1] });
+    edgeBord.push({ lat: board[0][aux][0], lng: board[0][aux][1] });
+
+    edgeBord.push({ lat: board[aux][aux][0], lng: board[aux][aux][1] });
+    edgeBord.push({ lat: board[aux][0][0], lng: board[aux][0][1] });
+
+    for (var i = 0; i < edgeBord.length; i++) {
+      bounds.extend(edgeBord[i]);
+    }
+
+   // if(T >= 3000){
+     // minZ=9
+    //}
+    
+    //opções do mapa 
+    const mapOptions = {
+      zoom: 9,
+     // minZoom: minZ,
+     // maxZoom: 18,
+      center: bounds.getCenter(),
+      disableDefaultUI: true,      
+      zoomControl: false,
+      styles: this.mapStyle1,
+      // draggable: false,
+      // scrollwheel: false, panControl: false,
+    }
+
+    //criando o mapa
+    this.map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+    //Criando borda do Tabuleiro
+    square = new google.maps.Polygon({
+      path: edgeBord,
+      strokeColor: colorBoard,
+      strokeOpacity: 1.0,
+      strokeWeight: 2,
+      //fillColor: '#FF0000',
+      fillOpacity: 0.0
+    });
+    square.setMap(this.map);
+
+    //Desenhando no Mapa
+    for (var i = 1; i < board.length; i++) {
+
+      //linhas horizontais
+      this.drawPolyline(board[i][0][0], board[i][0][1], board[i][aux][0], board[i][aux][1], colorBoard );
+
+      //linhas verticais
+      this.drawPolyline(board[0][i][0], board[0][i][1], board[aux][i][0], board[aux][i][1], colorBoard  );
+
+  }
+    
+    //Eixos X e Y
+    for (var i = 0; i < board.length; i++) {
+      //eixo X
+      if (axisY[1][i] == 0 ){
+       
+        this.drawPolyline(axisY[0][i], axisX[0][0], axisY[0][i], axisX[0][aux], colorAxis  );
+      }    
+      //eixo Y
+      if (axisX[1][i] == 0) {
+        
+        this.drawPolyline(axisY[0][0], axisX[0][i], axisY[0][aux], axisX[0][i], colorAxis   );
+      }    
+    }
+
+    //Escalas dos Eixos
+    for (var j = 0; j < board.length; j++) {
+      //Escala eixo X
+      if (axisY[1][j] == 0) {
+
+        for (var i = 0; i < board.length; i++) {
+          //adequando valor 0
+          if (axisX[1][i] == 0) {
+            position = new google.maps.LatLng(axisY[0][j], axisX[0][i]);  
+            markerIcon = { url: 'assets/imgs/label.png', labelOrigin: new google.maps.Point(2, 25) };
+          }else{
+            position = new google.maps.LatLng(axisY[0][j], axisX[0][i]);  
+            markerIcon = { url: 'assets/imgs/label.png', labelOrigin: new google.maps.Point(8, 25) };
+          }         
+
+          marker = new google.maps.Marker({
+            position: position,
+            map: this.map,
+        
+            label: { text: axisX[1][i].toString(), color: colorAxis, fontSize: '12px', fontWeight: '475' },
+            icon: markerIcon
+          });
+        }      
+      }
+
+      //Escala eixo Y
+      if (axisX[1][j] == 0) {
+        for (var i = 0; i < board.length; i++) {
+          if(axisY[1][i] != 0){
+            position = new google.maps.LatLng(axisY[0][i], axisX[0][j]);
+
+            marker = new google.maps.Marker({
+              position: position,
+              map: this.map,
+
+              label: { text: axisY[1][i].toString(), fontSize: '12px', fontWeight: '475' },
+              icon: {url: 'assets/imgs/label.png', labelOrigin: new google.maps.Point(0, 15 ) }
+            });
+          }
+        }
+      }
+    }
+
+    var bound = new google.maps.LatLngBounds();
+    bound.extend({ lat: board[0][0][0], lng: board[0][0][1] });
+    bound.extend({ lat: board[aux][aux][0], lng: board[aux][aux][1] });
+    
+    
+    this.map.setZoom(9);
+  
+    this.map.fitBounds(bound, -5);
+    
+    this.map.setOptions({ minZoom: this.map.getZoom() });
+   
+    console.log(this.map.getZoom());
+   
+
+    
+
+  
+    
+    
+  }
+
+
+}

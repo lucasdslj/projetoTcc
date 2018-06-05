@@ -1,0 +1,62 @@
+progress-bar {
+ 
+    .progress-forceBack {
+        width: 96%;
+        height: 12%;
+        margin: 10px 2%;
+       
+        text-align: center;
+        background-color: #06091d;
+        border: 1px solid #e02323;
+        color: #fff;
+        font-size: 68%;
+        border-radius: 20px;
+    }
+
+    .progress-xpBack {
+        width: 96%;
+        height: 12%;
+        margin: 10px 2%;
+        padding: 1px;
+        text-align: center;
+        background-color: #f4f4f4;
+        border: 1px solid #b8b9bb;
+        color: #fff;
+        font-size: 68%;
+        border-radius: 20px;
+    }
+ 
+    .progress-attack {
+        min-width: 15%;
+        white-space: nowrap;
+        height: 95%;
+        overflow: hidden;
+        padding: 4px;
+        border-radius: 20px;
+        background-color: #d42f11;
+    }
+
+    .progress-defense {
+        min-width: 15%;
+        white-space: nowrap;
+        height: 95%;
+        overflow: hidden;
+        padding: 4px;
+        border-radius: 20px;
+        background-color: #1648a5;
+    }
+
+    .progress-xp {
+        min-width: 15%;
+        white-space: nowrap;
+        height: 95%;
+        overflow: hidden;
+        padding: 4px;
+        border-radius: 20px;
+        background-color: #111e38;
+    }
+
+   
+ 
+ 
+}

@@ -1,0 +1,127 @@
+
+<ion-header  >
+ 
+  <ion-navbar color="primary"  >
+    <ion-title align="center" *ngIf="homeScreenOn">BattleShip</ion-title>
+  </ion-navbar>
+  
+</ion-header>
+
+<ion-content padding >
+<div *ngIf="homeScreenOn" >
+  <ion-card *ngFor="let dataP of dataPlayer">
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          
+          <div align="left" [ngSwitch]="dataP.patent">
+             <img src="assets/imgs/cabo.png" *ngSwitchCase="'Cabo'" class="img" />
+                    <img src="assets/imgs/sargento.png" *ngSwitchCase="'Sargento'" class="img" />
+                    <img src="assets/imgs/tenente.png" *ngSwitchCase="'Tenente'" class="img" />
+                    <img src="assets/imgs/capitao.png" *ngSwitchCase="'Capitão'" class="img" />
+                    <img src="assets/imgs/almirante.png" *ngSwitchCase="'Almirante'" class="img" />
+            <h3 align="center">
+              <b > Lv. {{dataP.level}} </b>
+            </h3>
+           
+          </div>
+        </ion-col>
+
+        <ion-col col-8>
+
+        
+          <h1>
+            <b> <font face="Helvetica"> {{dataP.patent}} {{dataP.user_name}}</font> </b>
+          </h1><br>
+
+            Ataque:
+            <progress-bar item-right [colorBackground]="colorBackForce" [colorProgress]="colorProgressAtack" [progress]="loadProgressAttack" [label]="labelProgress" [xpAmount]="attackAmount"></progress-bar>
+        
+            Defesa:
+            <progress-bar [colorBackground]="colorBackForce" [colorProgress]="colorProgressDefense" [label]="labelProgress" [progress]="loadProgressDefense" [xpAmount]="defenseAmount"></progress-bar>
+
+          
+        </ion-col>
+
+      </ion-row>
+    </ion-grid>
+  
+  </ion-card>
+<div padding>
+<br><br>
+<button ion-button (click)="listAdversaryScreenOn('newBattle')" color="danger" round full >Batalhar</button>
+<br>
+<button ion-button  color="secondary" (click)="listAdversaryScreenOn('rematch')" round full>Revanches</button>
+<br>
+<button ion-button (click)="profilePlayerScreenOn()"  round  full >Perfil</button>
+</div>
+
+
+
+
+
+
+
+
+
+<div *ngIf="aux">
+  
+  <div class="custom-spinner-container">
+    <div class="custom-spinner-box"></div>
+  </div>
+
+  
+  <button  ion-button (click)="presentLoadingText()">Batalhar!</button>
+ 
+<button ion-button (click)="test2()">Diminui!</button>
+
+<progress-bar [progress]="loadProgress" [xpAmount]="xpAmount" ></progress-bar>
+
+  
+
+<div cards>
+
+  <div class="grid-full">
+    <ion-row>
+      <ion-col>
+        <ion-card>
+          <div padding>
+          teste {{nick_name}}
+              <div class="progress-bar blue stripes" >
+              <span [style.width]=amountLifeP1></span>
+                     
+          </div>
+          </div>
+        </ion-card>
+      </ion-col>
+
+      <ion-col>
+        <ion-card>
+          teste
+            <div class="progress-bar blue stripes">
+              <span [style.width]=amountLifeP2></span>
+            </div>
+        </ion-card>
+      </ion-col>
+
+      
+    </ion-row>
+  </div>
+
+</div>
+
+
+    <button ion-button (click)="adversaryBombTrow()" [disabled]="btnDisable">Diminui!</button>
+    <button ion-button (click)="loginScreenOn()" round outline round outline>Login!</button>
+   
+    <button ion-button (click)="clearData()" color="danger" round outline>limpar dados</button>
+  
+</div>
+
+
+</div>
+</ion-content>  
+
+
+
+

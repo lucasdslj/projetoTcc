@@ -36,7 +36,7 @@ export class BattleScreenPage {
   mapStyle = mapStyle;
   public battleData = [];
 
-   
+   ab=true;
 
   trackerPause = false;
   //Barras de progressos
@@ -52,6 +52,7 @@ export class BattleScreenPage {
   user_name_adversary;
   
   setInter:any;
+  public possibleBattle="possible";
   public timeBreak = false;
   public user_name:string;
   public dataPlayer = [];
@@ -518,22 +519,22 @@ toTimestamp(horario) {
 }
 
 //função de Alert (Sem uso)
-doConfirm() {
-    let confirm = this.alerCtrl.create({
-      title: 'Tempo encerrado!',
-      message: 'Você Perdeu :(',
+alertBattleImpossible() {
+    let alertBattle = this.alerCtrl.create({
+      title: 'oohh Não!!! :(',
+      message: 'Você não pode batalhar agora com ' + this.user_name_adversary +' devido suas coordenadas atuais! Tente mais tarde!',
       buttons: [
        
         {
           text: 'ok',
           handler: () => {
-            this.navCtrl.push(this.listAdversaryScreenPage);
+            this.navCtrl.pop();
           
           }
         }
       ]
     });
-    confirm.present()
+  alertBattle.present()
   }
 
 //Chamada toda vez que a page fica ativa
@@ -604,9 +605,10 @@ ionViewDidEnter() {
     
 
     console.log("Page Battle", this.dataOpponentPlayer);
+    
+        //Consutrução do Tabuleiro
+    this.initBattle(); 
 
-    //Consutrução do Tabuleiro
-    this.initBattle();   
 
     //Tracker
     this.smartAudio.playTracker('tracker');
@@ -679,46 +681,57 @@ open(){
 
     var i, j;
     this.battleData = [];
+
     this.http.get(this.url).toPromise().then((response) => {
       this.battleData.push(response.json());
-      this.battleData = this.battleData[0]
+      
 
       console.log(this.battleData);
+      if (this.battleData[0] == "impossible") {
+        setTimeout(() => {
+          clearInterval(this.setInter);
+          this.alertBattleImpossible();
+        }, 3550);
+       
 
-      for (j = 0; j < this.battleData[0].length; j++) {
-        for (i = 0; i < this.battleData[0].length; i++) {
+        
+      }else{
 
-          //Normatização do json => 6 casas decimais
-          //Tabuleiro
-          this.battleData[0][j][i][0] = this.round(this.battleData[0][j][i][0], 6);
-          this.battleData[0][j][i][1] = this.round(this.battleData[0][j][i][1], 6);
+        this.battleData = this.battleData[0];
+        for (j = 0; j < this.battleData[0].length; j++) {
+          for (i = 0; i < this.battleData[0].length; i++) {
+
+            //Normatização do json => 6 casas decimais
+            //Tabuleiro
+            this.battleData[0][j][i][0] = this.round(this.battleData[0][j][i][0], 6);
+            this.battleData[0][j][i][1] = this.round(this.battleData[0][j][i][1], 6);
+
+          }
+          //Eixo X e Eixo Y
+          this.battleData[5][0][j] = this.round(this.battleData[5][0][j], 6);
+          this.battleData[6][0][j] = this.round(this.battleData[6][0][j], 6);
+          //escala dicimal
+          if (this.dataOpponentPlayer[0].level == 5) {
+            this.battleData[5][1][j] = this.round(this.battleData[5][1][j], 1);
+            this.battleData[6][1][j] = this.round(this.battleData[6][1][j], 1);
+          }
 
         }
-        //Eixo X e Eixo Y
-        this.battleData[5][0][j] = this.round(this.battleData[5][0][j], 6);
-        this.battleData[6][0][j] = this.round(this.battleData[6][0][j], 6);
-        //escala dicimal
-        if (this.dataOpponentPlayer[0].level == 5) {
-          this.battleData[5][1][j] = this.round(this.battleData[5][1][j], 1);
-          this.battleData[6][1][j] = this.round(this.battleData[6][1][j], 1);
+
+        //Coordenadas Jogadores
+        for (i = 0; i < 2; i++) {
+          //Player 1
+          this.battleData[1][i] = this.round(this.battleData[1][i], 6);
+          //Player 2
+          this.battleData[2][i] = this.round(this.battleData[2][i], 6);
         }
 
+
+        console.log("após");
+        console.log(this.battleData[7]);
+
+        this.map = this.createMap(this.battleData[0], this.battleData[5], this.battleData[6], this.battleData[1], this.battleData[2]);
       }
-
-      //Coordenadas Jogadores
-      for (i = 0; i < 2; i++) {
-        //Player 1
-        this.battleData[1][i] = this.round(this.battleData[1][i], 6);
-        //Player 2
-        this.battleData[2][i] = this.round(this.battleData[2][i], 6);
-      }
-
-
-      console.log("após");
-      console.log(this.battleData[7]);
-
-     this.map = this.createMap(this.battleData[0], this.battleData[5], this.battleData[6], this.battleData[1], this.battleData[2]);
-      
     });
   }
 

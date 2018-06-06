@@ -82,7 +82,7 @@
     <ion-list *ngSwitchCase="'rematch'">
     
     <div [ngSwitch]="stateRematch">
-      
+      <div *ngSwitchCase="'nVazio'">
         <ion-item *ngFor="let opPlayerR of opponentPlayersRematch"  >
           <ion-card [ngSwitch]="opPlayerR.patent">
         
@@ -139,8 +139,20 @@
         
         
         </ion-item>
+        </div>
+
+        <div *ngSwitchCase="'vazio'" class="text">
+
+          <p >
+      
+              <font face="Helvetica" align="center"> Você não possui revanches no momento!</font>
+             
+            
+          </p>
+        </div>
      
       </div>
+
     </ion-list>
   
   </div>

@@ -58,14 +58,18 @@ export class ModalBattleScreenPage {
       this.xpGained = this.navParams.get('xpGained');
       this.xpLevelUp = this.navParams.get('xpLevelUp');
       this.level = this.navParams.get('level');
-      
+      let typeOfBattle = this.navParams.get('typeOfBattle');
       
       //controle do Xp
       this.xpAmount = this.xpCurrent;
       this.xpAmountEnd = this.xpCurrent + this.xpGained;
 
-      this.http.post('http://localhost:8000/api/addRematch', { user_name, user_name_adversary }).toPromise().then((response) => {
-      });
+
+      if (typeOfBattle != 'rematch') {
+        this.http.post('http://localhost:8000/api/addRematch', { user_name, user_name_adversary }).toPromise().then((response) => {
+        });
+      }
+      
       
       let url = 'http://localhost:8000/api/plusVictory';
       this.http.post(url, { user_name }).toPromise().then((response) => {

@@ -109,9 +109,9 @@ export class ListAdversaryScreenPage {
       content: 'carregando'
     });
     loading.present();
-    setTimeout(() => {
-      loading.dismiss();
-    }, 5000);
+   // setTimeout(() => {
+      
+    //}, 5000);
     
     console.log("Page List Opponents",opponentPlayerSelected); //aux desenvolvimento
     
@@ -130,6 +130,7 @@ export class ListAdversaryScreenPage {
 
     setTimeout(() => {
       //this.navCtrl.push(this.battleScreenPage);
+      loading.dismiss();
       this.navCtrl.push(this.battleScreenPage, { aux, user_name, typeB  });
 
     }, 1000);

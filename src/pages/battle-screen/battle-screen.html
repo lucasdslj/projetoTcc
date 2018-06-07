@@ -141,13 +141,13 @@
               <form [formGroup]="formBattle" (ngSubmit)="playerBombThrow(coordinates)">
                 <ion-item>
                   <ion-label color="primary" floating>X</ion-label>
-                  <ion-input type="text" [(ngModel)]="coordinates.x" name="coordinateX" formControlName="coordinateX"></ion-input>
+                  <ion-input type="number" [(ngModel)]="coordinates.x" name="coordinateX" formControlName="coordinateX"></ion-input>
                 </ion-item>
-                <h6 *ngIf="controlX" class="error"> {{controlXMes}}</h6>
+                
                 <ion-item>
                   <ion-label color="primary" floating>Y</ion-label>
-                  <ion-input type="text" [(ngModel)]="coordinates.y" name="coordinateY" formControlName="coordinateY"></ion-input>
-                </ion-item>
+                  <ion-input type="number" [(ngModel)]="coordinates.y" name="coordinateY" formControlName="coordinateY"></ion-input>
+                </ion-item> 
                 <button [disabled]="formBattle.invalid" ion-button type="submit"  [disabled]="btnDisable" block>atirar</button>
               
               </form>

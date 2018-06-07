@@ -52,6 +52,7 @@ export class BattleScreenPage {
   user_name_adversary;
   
   setInter:any;
+  typeOfBatte;
   public possibleBattle="possible";
   public timeBreak = false;
   public user_name:string;
@@ -65,16 +66,18 @@ export class BattleScreenPage {
 
   constructor(public navCtrl: NavController,  public navParams: NavParams, public http: Http, public formBuilder: FormBuilder, 
      private toastCtrl: ToastController, public smartAudio: SmartAudioProvider, public modalCtrl: ModalController,
-    public alerCtrl: AlertController, public loadingCtrl: LoadingController, public storage: Storage ) {
+    public alertCtrl: AlertController, public loadingCtrl: LoadingController, public storage: Storage ) {
     
     //validação do form de lançar bomba
     this.formBattle = formBuilder.group({
       coordinateX: ['', Validators.compose([Validators.minLength(1), Validators.maxLength(5), 
-        Validators.pattern('(-)?[0-9]+'), Validators.required])],
+        Validators.pattern('((-)?[0-9]+)|((-)?[0-9]+([.]|[,])[0-9]+)'), Validators.required])],
       coordinateY: ['', Validators.compose([Validators.minLength(1), Validators.maxLength(5),
-        Validators.pattern('(-)?[0-9]+'), Validators.required])]
+        Validators.pattern('((-)?[0-9]+)|((-)?[0-9]+([.]|[,])[0-9]+)'), Validators.required])]
     });
-    
+
+    //[0-9]{0,10}[,]{1,1}[0-9]{0,4}
+    //| (-) ? [0 - 9] + ([.] | [,])[0 - 9] +
     
 //'(-)?[0-9]+(.)?[0-9]+'
 
@@ -199,6 +202,7 @@ export class BattleScreenPage {
           let toast =this.toastCtrl.create({
             message: this.dataOpponentPlayer[0].patent + ' ' + this.dataOpponentPlayer[0].user_name + ' Lança Bomba',
             duration: 2000,
+            position: 'top'
 
           });
           toast.onDidDismiss;
@@ -237,6 +241,7 @@ getRandomInt(min, max) {
 bombHit(){
 
   if (this.timeBreak == false) {
+    this.smartAudio.play('bombWater');
     setTimeout(() => {
       this.markerBoardBomb(this.map, this.battleData[1][0], this.battleData[1][1], 'bombWater4.gif', '');
 
@@ -252,6 +257,7 @@ bombHit(){
       let toast = this.toastCtrl.create({
         message: this.dataOpponentPlayer[0].patent + ' ' + this.dataOpponentPlayer[0].user_name + ' Acertou seu navio!',
         duration: 2000,
+        position: 'top'
 
       });
 
@@ -270,6 +276,7 @@ bombHit(){
 
 bombMiss(start1, end1, start2, end2){
   if (this.timeBreak == false) {
+    this.smartAudio.play('bombWater');
      
 
     let x, y, rs = [];
@@ -288,6 +295,7 @@ bombMiss(start1, end1, start2, end2){
      let toast = this.toastCtrl.create({
        message: this.dataOpponentPlayer[0].patent + ' ' + this.dataOpponentPlayer[0].user_name + ' errou o Lançamento!',
        duration: 2000,
+       position: 'top'
 
      });
      toast.onDidDismiss;
@@ -417,8 +425,10 @@ adversaryBombTrow(level){
       
     
     }
-
+    setTimeout(() => {
       this.btnDisable = false;
+    }, 2000);
+      
   }
       
    
@@ -520,7 +530,7 @@ toTimestamp(horario) {
 
 //função de Alert (Sem uso)
 alertBattleImpossible() {
-    let alertBattle = this.alerCtrl.create({
+    let alertBattle = this.alertCtrl.create({
       title: 'oohh Não!!! :(',
       message: 'Você não pode batalhar agora com ' + this.user_name_adversary +' devido suas coordenadas atuais! Tente mais tarde!',
       buttons: [
@@ -558,14 +568,14 @@ ionViewDidEnter() {
 
     this.user_name = this.navParams.get('user_name');
     
-    let typeOfBatte = this.navParams.get('typeB');
+    this.typeOfBatte = this.navParams.get('typeB');
 
     this.getDataPlayer();
 
     console.log("user_name:", this.user_name);
     this.dataOpponentPlayer = this.navParams.get('aux'); //recebendo parâmentros da page
 
-    if (typeOfBatte == 'rematch') {
+    if (this.typeOfBatte == 'rematch') {
       this.user_name_adversary = this.dataOpponentPlayer[0].player_adversary;
     } else{
       this.user_name_adversary = this.dataOpponentPlayer[0].user_name;
@@ -658,7 +668,8 @@ open(){
   openModalScreenVictory(outType, xpCurrent, xpGained, xpLevelUp, user_name, level) {
     
     let user_name_adversary = this.user_name_adversary;
-    let myModal = this.modalCtrl.create(ModalBattleScreenPage, { outType, xpCurrent, xpGained, xpLevelUp, user_name, level, user_name_adversary});
+    let typeOfBattle = this.typeOfBatte;
+    let myModal = this.modalCtrl.create(ModalBattleScreenPage, { outType, xpCurrent, xpGained, xpLevelUp, user_name, level, user_name_adversary, typeOfBattle});
     myModal.present();
 
     myModal.onDidDismiss(() => { this.navCtrl.pop() });
@@ -682,19 +693,24 @@ open(){
     var i, j;
     this.battleData = [];
 
+    var loading = this.loadingCtrl.create({
+      spinner: 'dots',
+      content: 'carregando'
+    });
+    loading.present();
+
     this.http.get(this.url).toPromise().then((response) => {
       this.battleData.push(response.json());
-      
-
       console.log(this.battleData);
+      
       if (this.battleData[0] == "impossible") {
         setTimeout(() => {
           clearInterval(this.setInter);
           this.alertBattleImpossible();
+          loading.dismiss();
+          clearInterval(inter);
         }, 3550);
-       
-
-        
+          
       }else{
 
         this.battleData = this.battleData[0];
@@ -729,8 +745,18 @@ open(){
 
         console.log("após");
         console.log(this.battleData[7]);
+       
 
         this.map = this.createMap(this.battleData[0], this.battleData[5], this.battleData[6], this.battleData[1], this.battleData[2]);
+       
+       
+        var inter = setTimeout(() => {
+        if (this.map.controls.length > 0) {
+          loading.dismiss();
+          clearInterval(inter);
+        }
+        }, 200);
+
       }
     });
   }

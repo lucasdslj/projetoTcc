@@ -4,6 +4,9 @@ import { IonicPage, NavController, NavParams,  LoadingController  } from 'ionic-
 import { Geolocation } from '@ionic-native/geolocation';
 import { Storage } from '@ionic/storage';
 import { Http, HttpModule } from '@angular/http';
+import { AlertController } from 'ionic-angular';
+
+
 
 //page
 import {LoginScreenPage} from '../login-screen/login-screen';
@@ -19,6 +22,8 @@ export class ProfilePlayerScreenPage {
   xpAmount = 250;
   public dataPlayer;
   public user_name;
+ 
+
 
   //barra de progresso  
   loadProgressDefense: number;
@@ -30,14 +35,24 @@ export class ProfilePlayerScreenPage {
   colorProgressAtack = "progress-attack";
   colorProgressDefense = "progress-defense";
   labelProgress = '';
+ 
+  lat:any;
+  lng:any;
 
 
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private http: Http,
+
+  constructor(public navCtrl: NavController, public navParams: NavParams, private http: Http, public alertCtrl: AlertController,
     public loadingCtrl: LoadingController, private geolocation: Geolocation, public storage: Storage) {
   }
 
   ionViewDidEnter() {
+
+    let loading = this.loadingCtrl.create({
+      spinner: 'dots',
+      content: 'carregando'
+    });
+    loading.present();
 
     this.user_name = this.navParams.get('user_name');
 
@@ -48,11 +63,12 @@ export class ProfilePlayerScreenPage {
 
     this.dataPlayer = [];
 
-    let url = 'http://localhost:8000/api/getPlayer';
+    let url = 'https://battleshiptcc.000webhostapp.com/api/getPlayer';
     let user_name = this.user_name;
     this.http.post(url, { user_name }).toPromise().then((response) => {
       this.dataPlayer.push(response.json());
       this.dataPlayer = this.dataPlayer[0];
+      loading.dismiss();
       console.log("dados", this.dataPlayer[0]);
 
     });
@@ -78,5 +94,72 @@ export class ProfilePlayerScreenPage {
     })
   }
 
+ 
+
+
+  alertLocation(message, title) {
+    let alertBattle = this.alertCtrl.create({
+      title: title,
+      message: message,
+      buttons: [
+
+        {
+          text: 'Ok',
+          handler: () => {
+            
+
+          }
+        }
+      ]
+    });
+    alertBattle.present();
+  }
+
+
+  
+
+ setDataLocation( lat, lng){
+   let user_name = this.user_name
+   this.http.post('https://battleshiptcc.000webhostapp.com/api/setLocation', { user_name, lat, lng }).toPromise().then((response) => {
+
+   });
+
+ }
+
+
+
+  setLocation() {
+    var options = {
+      enableHighAccuracy: true,
+      timeout: 2000,
+      maximumAge: 0
+    };
+
+
+        this.geolocation.getCurrentPosition(options).then((res) => {
+
+          this.lat = res.coords.latitude;
+          this.lng = res.coords.longitude;
+
+
+          this.alertLocation('Localização atualizada com sucesso! Pode desligar seu GPS se desejar! ;)', 'Tudo certo!');
+
+          this.setDataLocation(this.lat, this.lng);
+
+        }).catch(() => {
+          this.alertLocation('Por favor ative seu Gps ou certifique-se de ter concedido as permissões necessárias!', 'Ooh não!!! :(');
+        });
+
+
+  
+
+  }
+
+
+
+
 
 }
+
+
+

@@ -6,9 +6,11 @@ import {FormBuilder, Validators} from '@angular/forms'
 import { LoadingController } from 'ionic-angular';
 import { ToastController } from 'ionic-angular';
 
+import { NativeAudio } from '@ionic-native/native-audio';
+
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/toPromise';
-import { SmartAudioProvider } from '../../providers/smart-audio/smart-audio';
+//import { SmartAudioProvider } from '../../providers/smart-audio/smart-audio';
 import { Storage } from '@ionic/storage';
 
 //Pages
@@ -53,7 +55,7 @@ export class BattleScreenPage {
   
   setInter:any;
   typeOfBatte;
-  public possibleBattle="possible";
+  public possibleBattle = "possible";
   public timeBreak = false;
   public user_name:string;
   public dataPlayer = [];
@@ -65,14 +67,17 @@ export class BattleScreenPage {
   public formBattle: any;
 
   constructor(public navCtrl: NavController,  public navParams: NavParams, public http: Http, public formBuilder: FormBuilder, 
-     private toastCtrl: ToastController, public smartAudio: SmartAudioProvider, public modalCtrl: ModalController,
+    private toastCtrl: ToastController, public modalCtrl: ModalController, private nativeAudio: NativeAudio,
     public alertCtrl: AlertController, public loadingCtrl: LoadingController, public storage: Storage ) {
+
+    this.nativeAudio.preloadSimple('soundtrack', 'assets/sounds/track.mp3');
+    this.nativeAudio.preloadSimple('bomb', 'assets/sounds/Bomb.mp3');
     
     //validação do form de lançar bomba
     this.formBattle = formBuilder.group({
-      coordinateX: ['', Validators.compose([Validators.minLength(1), Validators.maxLength(5), 
+      coordinateX: ['', Validators.compose([Validators.minLength(1), Validators.maxLength(6), 
         Validators.pattern('((-)?[0-9]+)|((-)?[0-9]+([.]|[,])[0-9]+)'), Validators.required])],
-      coordinateY: ['', Validators.compose([Validators.minLength(1), Validators.maxLength(5),
+      coordinateY: ['', Validators.compose([Validators.minLength(1), Validators.maxLength(6),
         Validators.pattern('((-)?[0-9]+)|((-)?[0-9]+([.]|[,])[0-9]+)'), Validators.required])]
     });
 
@@ -92,8 +97,8 @@ export class BattleScreenPage {
 
      var geoX = 0, geoY = 0, valueX= false, valueY = false;
 
-    
-    this.smartAudio.play('bombWater');
+    this.nativeAudio.play('bomb');
+    //this.smartAudio.play('bombWater');
     var checkEnd = false;
 
     //time para decremntar variavel em tela, bombas
@@ -112,27 +117,31 @@ export class BattleScreenPage {
 
       setTimeout(() => {
         // this.amountDamageP1 += atack_force do Player 1; Exemplo como deve ser
-        this.amountDamageP1 += this.dataPlayer[0].attack_force;
+        this.amountDamageP1 += parseInt(this.dataPlayer[0].attack_force);
 
-        this.amountLifeP2 = 100 - (this.amountDamageP1 * 100 ) / this.dataOpponentPlayer[0].amount_life + '%';
+        this.amountLifeP2 = (100 - ((this.amountDamageP1 * 100 ) / parseInt(this.dataOpponentPlayer[0].amount_life))) + '%';
 
-        if (this.amountLifeP2 == "0%") {
+        if (parseInt(this.amountLifeP2.slice(0,-1)) <= 0) {
+          this.amountLifeP2 = "0%";
           //vitoria
 
-          this.openModalScreenVictory('victory', this.dataPlayer[0].amount_xp, this.dataOpponentPlayer[0].xp_given,
-            this.dataPlayer[0].amount_level_up + 1, this.user_name, this.dataPlayer[0].level );
+          this.openModalScreenVictory('victory', parseInt(this.dataPlayer[0].amount_xp), parseInt(this.dataOpponentPlayer[0].xp_given),
+            parseInt(this.dataPlayer[0].amount_level_up) + 1, this.user_name, parseInt(this.dataPlayer[0].level) );
           clearInterval(this.setInter);
           checkEnd = true;
 
+        }else{
+
+          if ((this.amountBomb != 0)) {
+
+            
+              this.initBattle(); // nova rodada
+         
+
+          }
         }
 
-        if ((this.amountBomb != 0) || (this.amountLifeP2 != "0%")) {
-
-          setTimeout(() => {
-            this.initBattle(); // nova rodada
-          }, 0);
-
-        }
+       
 
 
       }, 2000);
@@ -197,6 +206,7 @@ export class BattleScreenPage {
         this.openModalScreenDefeat('defeat',"Suas Bombas Acabaram!", this.user_name);
         clearInterval(this.setInter);
       }else{
+        if ((checkEnd == false)){
         //CHAMADA FUNÇÃO TIRO DO ADVERSÁRIO
         setTimeout(() => {
           let toast =this.toastCtrl.create({
@@ -208,12 +218,13 @@ export class BattleScreenPage {
           toast.onDidDismiss;
 
           toast.present();
-          this.adversaryBombTrow(this.dataOpponentPlayer[0].level);
-        }, 2000);
+          this.adversaryBombTrow(parseInt(this.dataOpponentPlayer[0].level));
+        }, 3000); //verificar se esta certo tiro
+      }
       }
     
     
-    }, 2005);  // tempo precisa ser maior do que o tempo de lançamento da bomba                             
+    }, 2050);  // tempo precisa ser maior do que o tempo de lançamento da bomba                             
     
   
 
@@ -241,7 +252,8 @@ getRandomInt(min, max) {
 bombHit(){
 
   if (this.timeBreak == false) {
-    this.smartAudio.play('bombWater');
+    this.nativeAudio.play('bomb');
+   /// this.smartAudio.play('bombWater');
     setTimeout(() => {
       this.markerBoardBomb(this.map, this.battleData[1][0], this.battleData[1][1], 'bombWater4.gif', '');
 
@@ -250,7 +262,7 @@ bombHit(){
       console.log("somatorio de dano", this.amountDamageP2);
 
       // este "100" que divide é para substituir pela quantidade de vida do Player 1 (banco de dados local)
-      this.amountLifeP1 = (100 - ((this.amountDamageP2 * 100) / this.dataPlayer[0].amount_life)) + '%';
+      this.amountLifeP1 = (100 - ((this.amountDamageP2 * 100) / parseInt(this.dataPlayer[0].amount_life))) + '%';
 
       console.log("Life", this.amountLifeP1)
 
@@ -260,8 +272,12 @@ bombHit(){
         position: 'top'
 
       });
+      toast.onDidDismiss;
+      toast.present();
 
-      if ((this.amountLifeP1 == "0%")) {
+      if (parseInt(this.amountLifeP1.slice(0, -1)) <= 0) {
+        this.amountLifeP1 = "0%";
+
         //Derrota
 
         this.openModalScreenDefeat('defeat', "Seu navio afundou!", this.user_name);
@@ -269,14 +285,15 @@ bombHit(){
 
 
       }
-    }, 2000);
+    }, 2005);
   }
 
   }
 
 bombMiss(start1, end1, start2, end2){
   if (this.timeBreak == false) {
-    this.smartAudio.play('bombWater');
+    this.nativeAudio.play('bomb');
+  //  this.smartAudio.play('bombWater');
      
 
     let x, y, rs = [];
@@ -299,11 +316,9 @@ bombMiss(start1, end1, start2, end2){
 
      });
      toast.onDidDismiss;
-
      toast.present();
-
-     
-   }, 2000);
+ 
+   }, 2005);
      
     
     rs.push(x);
@@ -423,6 +438,17 @@ adversaryBombTrow(level){
         }
         break;
       
+
+      default:{
+        let toast = this.toastCtrl.create({
+          message: 'entrouuuu!!!!!!!',
+          duration: 2000,
+        });
+        toast.onDidDismiss;
+        toast.present();
+
+      }
+        break;
     
     }
     setTimeout(() => {
@@ -551,21 +577,24 @@ alertBattleImpossible() {
 
 getDataPlayer(){
   this.dataPlayer = [];
-  let url = 'http://localhost:8000/api/getPlayer';
+  let url = 'https://battleshiptcc.000webhostapp.com/api/getPlayer';
   let user_name = this.user_name; 
   this.http.post(url, { user_name }).toPromise().then((response) => {
     this.dataPlayer.push(response.json());
     this.dataPlayer = this.dataPlayer[0];
     console.log("dados", this.dataPlayer[0]);
+    //normatização
+ 
   });
 }
 
 ionViewDidEnter() {
-    
+
+ 
+
+
     var a = 1; //auxiliar para decremento do tempo
     
-    
-
     this.user_name = this.navParams.get('user_name');
     
     this.typeOfBatte = this.navParams.get('typeB');
@@ -582,10 +611,10 @@ ionViewDidEnter() {
     }
 
     //url para requisição no gmaps
-    this.url = 'http://localhost:8000/api/boardcomposition/' + this.user_name + '/' + this.user_name_adversary;
+    this.url = 'https://battleshiptcc.000webhostapp.com/api/boardcomposition/' + this.user_name + '/' + this.user_name_adversary;
 
     
-    this.amountBomb = this.dataOpponentPlayer[0].amount_bomb;
+    this.amountBomb = parseInt(this.dataOpponentPlayer[0].amount_bomb);
     //this.time = this.subTime( this.dataOpponentPlayer[0].time,1);
 
     var timeStamp = this.toTimestamp(this.dataOpponentPlayer[0].time)
@@ -617,30 +646,34 @@ ionViewDidEnter() {
     console.log("Page Battle", this.dataOpponentPlayer);
     
         //Consutrução do Tabuleiro
+  
+  this.nativeAudio.loop('soundtrack');
     this.initBattle(); 
-
+  
+    
 
     //Tracker
-    this.smartAudio.playTracker('tracker');
+    //this.smartAudio.playTracker('tracker');
 
-    let timeOut =59000;
-    for (var i = 1; i < 5  ; i++) {
-      setTimeout(() => {
-        if (this.trackerPause == true) {
-          return
-        }
-        this.smartAudio.playTracker('tracker');
-      }, timeOut * i);
-    }
+   // let timeOut =59000;
+   // for (var i = 1; i < 5  ; i++) {
+    //  setTimeout(() => {
+    //    if (this.trackerPause == true) {
+     //     return
+      //  }
+       // this.smartAudio.playTracker('tracker');
+    //  }, timeOut * i);
+ //   }
 
 
   }
 
   //verificar o pause de todos plays -> executa antes da page sair 
   ionViewCanLeave() {
+    this.nativeAudio.stop('soundtrack');
     for (var i = 1; i < 5; i++) {
 
-      this.smartAudio.stopTracker('tracker');
+     // this.smartAudio.stopTracker('tracker');
       this.trackerPause = true;
     }
 
@@ -652,8 +685,8 @@ ionViewDidEnter() {
 open(){
   
   // this.openModalScreenDefeat('defeat',"O Tempo Acabou!");
-  this.openModalScreenVictory('victory', this.dataPlayer[0].amount_xp, this.dataOpponentPlayer[0].xp_given,
-    this.dataPlayer[0].amount_level_up + 1, this.user_name, this.dataPlayer[0].level );
+  this.openModalScreenVictory('victory', parseInt(this.dataPlayer[0].amount_xp), parseInt(this.dataOpponentPlayer[0].xp_given),
+    parseInt(this.dataPlayer[0].amount_level_up) + 1, this.user_name, parseInt(this.dataPlayer[0].level) );
 }
 
   //Modal
@@ -681,7 +714,7 @@ open(){
 
   //Pause Tracker (apenas teste)
   test(){
-    this.smartAudio.stopTracker('tracker');
+   // this.smartAudio.stopTracker('tracker');
     this.trackerPause = true;
   }
 
@@ -704,11 +737,15 @@ open(){
       console.log(this.battleData);
       
       if (this.battleData[0] == "impossible") {
+        //set interval serve para ter a certeza do andamento 
         setTimeout(() => {
-          clearInterval(this.setInter);
           this.alertBattleImpossible();
+          clearInterval(this.setInter);
+         
           loading.dismiss();
           clearInterval(inter);
+          
+          
         }, 3550);
           
       }else{
@@ -727,7 +764,7 @@ open(){
           this.battleData[5][0][j] = this.round(this.battleData[5][0][j], 6);
           this.battleData[6][0][j] = this.round(this.battleData[6][0][j], 6);
           //escala dicimal
-          if (this.dataOpponentPlayer[0].level == 5) {
+          if (parseInt(this.dataOpponentPlayer[0].level) == 5) {
             this.battleData[5][1][j] = this.round(this.battleData[5][1][j], 1);
             this.battleData[6][1][j] = this.round(this.battleData[6][1][j], 1);
           }

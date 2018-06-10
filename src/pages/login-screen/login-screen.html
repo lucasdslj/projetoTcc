@@ -13,16 +13,17 @@
 </ion-header>
 <ion-content padding>
 
-<form [formGroup]="formLogin" (ngSubmit)="authenticateLogin(email, password)">
+<form [formGroup]="formLogin">
   <ion-list>
     <ion-item>
       <ion-label color="primary" floating>Email</ion-label>
-      <ion-input name="email"[(ngModel)]="email" formControlName="email"></ion-input>
+      <ion-input type="email" name="email"[(ngModel)]="email" formControlName="email"></ion-input>
       
     </ion-item>
     <ion-item>
       <ion-label color="primary" floating>Password</ion-label>
-      <ion-input type="password" name="password" [(ngModel)]="password" formControlName="password"></ion-input>
+      <ion-input [type]="password_type"  name="password" [(ngModel)]="password" formControlName="password"></ion-input>
+        <button ion-button item-right (click)="togglePasswordMode()" round>mostrar </button>
     </ion-item>
   </ion-list>
   

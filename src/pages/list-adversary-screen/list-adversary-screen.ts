@@ -58,11 +58,16 @@ export class ListAdversaryScreenPage {
     var len;
     var inter = setTimeout(() => {
 
-      this.url = 'http://localhost:8000/api/opponentPlayers/' + this.user_name;
+      this.url = 'https://battleshiptcc.000webhostapp.com/api/opponentPlayers/' + this.user_name;
 
       this.http.get(this.url).toPromise().then((response) => {
         this.opponentPlayers.push(response.json());
         len = this.opponentPlayers[0].length;
+
+        //normatização
+      
+
+
         this.opponentPlayers = this.opponentPlayers[0];
       
         if (len > 0) {
@@ -75,7 +80,7 @@ export class ListAdversaryScreenPage {
       });
 
 
-      this.http.post('http://localhost:8000/api/getRematch', { user_name } ).toPromise().then((response) => {
+      this.http.post('https://battleshiptcc.000webhostapp.com/api/getRematch', { user_name } ).toPromise().then((response) => {
         this.opponentPlayersRematch.push(response.json());
         if (this.opponentPlayersRematch[0].length == 0) {
           this.stateRematch = 'vazio';
@@ -83,6 +88,7 @@ export class ListAdversaryScreenPage {
         }else{
           this.stateRematch = 'nVazio';
         }
+  
 
         this.opponentPlayersRematch = this.opponentPlayersRematch[0];
 
@@ -118,12 +124,13 @@ export class ListAdversaryScreenPage {
     var aux = [];
     //convertando em um array
     aux[0] = opponentPlayerSelected;
+    
     let user_name_adversary = aux[0].player_adversary;
 
     console.log("aa", user_name_adversary);
 
     if(typeB == 'rematch'){
-      this.http.post('http://localhost:8000/api/delRematch', { user_name, user_name_adversary }).toPromise().then((response) => {
+      this.http.post('https://battleshiptcc.000webhostapp.com/api/delRematch', { user_name, user_name_adversary }).toPromise().then((response) => {
       });
 
     }

@@ -47,7 +47,7 @@ export class ModalBattleScreenPage {
       this.defeatMessage = this.navParams.get('defeatMessage');
       
 
-      let url = 'http://localhost:8000/api/plusDefeat';
+      let url = 'https://battleshiptcc.000webhostapp.com/api/plusDefeat';
       this.http.post(url, { user_name }).toPromise().then((response) => {
       });
 
@@ -66,16 +66,16 @@ export class ModalBattleScreenPage {
 
 
       if (typeOfBattle != 'rematch') {
-        this.http.post('http://localhost:8000/api/addRematch', { user_name, user_name_adversary }).toPromise().then((response) => {
+        this.http.post('https://battleshiptcc.000webhostapp.com/api/addRematch', { user_name, user_name_adversary }).toPromise().then((response) => {
         });
       }
       
       
-      let url = 'http://localhost:8000/api/plusVictory';
+      let url = 'https://battleshiptcc.000webhostapp.com/api/plusVictory';
       this.http.post(url, { user_name }).toPromise().then((response) => {
       });
 
-      url = 'http://localhost:8000/api/plusXp';
+      url = 'https://battleshiptcc.000webhostapp.com/api/plusXp';
       let xpGained = this.xpGained; //Variavel para passar na rota
       this.http.post(url, { user_name, xpGained }).toPromise().then((response) => {
       });
@@ -96,7 +96,7 @@ export class ModalBattleScreenPage {
 
         if ((this.xpCurrent + this.xpGained) >= this.xpLevelUp ){
 
-          url = 'http://localhost:8000/api/plusLevel';
+          url = 'https://battleshiptcc.000webhostapp.com/api/plusLevel';
           let xpGained = this.xpGained; //Variavel para passar na rota
           this.http.post(url, { user_name }).toPromise().then((response) => {
           });

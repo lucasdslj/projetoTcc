@@ -4,6 +4,7 @@ import { Http } from '@angular/http';
 
 import { FormBuilder, Validators } from '@angular/forms'
 import { ToastController } from 'ionic-angular';
+import { LoadingController } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -19,8 +20,8 @@ export class SignUpScreenPage {
   sex: any;
   checkUser_name=false;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public http: Http, public formBuilder: FormBuilder,
-    private toastCtrl: ToastController) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public loadingCtrl: LoadingController, public http: Http, 
+    public formBuilder: FormBuilder,   private toastCtrl: ToastController) {
 
     this.formSignUp = formBuilder.group({
       name: ['', Validators.compose([Validators.required])],
@@ -73,7 +74,7 @@ export class SignUpScreenPage {
   
 
     let message:string;
-    this.url ="http://localhost:8000/api/verifyUserName"
+    this.url ="https://battleshiptcc.000webhostapp.com/api/verifyUserName"
     this.http.post(this.url, { user_name }).toPromise().then((response) => {
       let verify = [];
       verify.push(response.json());
@@ -101,19 +102,31 @@ export class SignUpScreenPage {
     }else{
       var verify =[];
       let message: string;
-      this.url = 'http://localhost:8000/api/verifyEmail';
+      this.url = 'https://battleshiptcc.000webhostapp.com/api/verifyEmail';
 
       this.http.post(this.url, { user_name, name, email, sex, password }).toPromise().then((response) => {
           verify.push(response.json());
       
       console.log(verify[0]);
       if (verify[0] == 'available') {
-         this.url = 'http://localhost:8000/api/createNewPlayer';
+         this.url = 'https://battleshiptcc.000webhostapp.com/api/createNewPlayer';
          this.http.post(this.url, { user_name, name, email, sex, password }).toPromise().then((response) => {
-            this.toastMessage('Cadastro realizado com Sucesso!');
-             setTimeout(() => {
-              this.navCtrl.pop();
-              }, 2000);
+            this.toastMessage('Cadastro realizado com Sucesso! Realize seu login!');
+            
+              // retornando à página de login            
+              let loading = this.loadingCtrl.create({
+                spinner: 'dots',
+                content: 'carregando'
+              });
+              loading.present();
+
+           
+              setTimeout(() => {
+                 this.navCtrl.pop();
+                  loading.dismiss();
+              }, 1000);
+
+
 
           });
 

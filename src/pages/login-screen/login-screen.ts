@@ -11,6 +11,7 @@ import { LoadingController } from 'ionic-angular';
 
 import { SignUpScreenPage } from '../sign-up-screen/sign-up-screen';
 import {HomePage} from '../home/home';
+import { AlertController } from 'ionic-angular';
 
 import { Storage } from '@ionic/storage';
 
@@ -34,7 +35,7 @@ export class LoginScreenPage {
 
   private url ='https://battleshiptcc.000webhostapp.com/api/login';
   constructor(public navCtrl: NavController, public navParams: NavParams, public loadingCtrl: LoadingController, public http: Http, 
-    public formBuilder: FormBuilder, private toastCtrl: ToastController, public storage: Storage) {
+    public formBuilder: FormBuilder, private toastCtrl: ToastController, public storage: Storage, public alertCtrl: AlertController) {
 
     this.formLogin = formBuilder.group({
       email: ['', Validators.compose([Validators.maxLength(70), 
@@ -50,6 +51,37 @@ export class LoginScreenPage {
   //pages
   signUpScreenPage = SignUpScreenPage;
   homePage = HomePage;
+
+  alertNetwork(message, title, email, password) {
+    let alertBattle = this.alertCtrl.create({
+      title: title,
+      message: message,
+      buttons: [
+
+        {
+          text: 'Recarregar',
+          handler: () => {
+            
+            this.authenticateLogin(email, password);
+
+          }
+        },
+        {
+
+          text: 'ok',
+          handler: () => {
+
+
+          }
+        }
+        
+      ]
+    });
+    alertBattle.present()
+  }
+
+
+
 
   authenticateLogin(email, password) {
 
@@ -73,6 +105,13 @@ export class LoginScreenPage {
     });
     loading.present();
 
+    //net
+    let timeOutNetwork = setTimeout(() => {
+      loading.dismiss();
+      this.alertNetwork('Problemas com a conexão à internet :(', 'Ohh não!!', email, password);
+
+    }, 10000);
+
     this.http.post(this.url, {email, password}).toPromise().then((response) =>{
       console.log(response);
       this.userData.push(response.json());
@@ -80,8 +119,9 @@ export class LoginScreenPage {
       console.log(this.userData);
 
       if(this.userData[0] != "err"){
-        loading.dismiss();
-       
+
+        clearTimeout(timeOutNetwork);//net
+               
         let toast = this.toastCtrl.create(
           {
             message: 'Usuário logado com sucesso!',
@@ -90,8 +130,7 @@ export class LoginScreenPage {
         toast.onDidDismiss;
         toast.present();
         
-
-       
+        //preparando para usar banco local
         this.storage.ready().then(() => {
         });
 
@@ -109,6 +148,7 @@ export class LoginScreenPage {
         loading.dismiss();
 
       }else{
+        clearTimeout(timeOutNetwork);//net
         this.userData=[];
         loading.dismiss();
         let toast = this.toastCtrl.create(
@@ -120,7 +160,7 @@ export class LoginScreenPage {
         toast.present();
         
 
-        console.log("No");
+        console.log("No");//teste
       }
      // this.userData = this.userData[0];
     //  

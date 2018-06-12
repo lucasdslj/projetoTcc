@@ -5,6 +5,7 @@ import { Http } from '@angular/http';
 import { FormBuilder, Validators } from '@angular/forms'
 import { ToastController } from 'ionic-angular';
 import { LoadingController } from 'ionic-angular';
+import { AlertController } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -21,7 +22,7 @@ export class SignUpScreenPage {
   checkUser_name=false;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public loadingCtrl: LoadingController, public http: Http, 
-    public formBuilder: FormBuilder,   private toastCtrl: ToastController) {
+    public formBuilder: FormBuilder, private toastCtrl: ToastController, public alertCtrl: AlertController) {
 
     this.formSignUp = formBuilder.group({
       name: ['', Validators.compose([Validators.required])],
@@ -69,10 +70,41 @@ export class SignUpScreenPage {
     toast.present();
   }
 
-  verifyNickname(user_name){
+  alertNetwork(message, title) {
+    let alertBattle = this.alertCtrl.create({
+      title: title,
+      message: message,
+      buttons: [
 
+        {
+          text: 'ok',
+          handler: () => {
+
+            
+          }
+        }
+      ]
+    });
+    alertBattle.present()
+  }
   
 
+  verifyNickname(user_name){
+    let loading = this.loadingCtrl.create({
+      spinner: 'dots',
+      content: 'carregando'
+    });
+    loading.present();
+
+    //net
+    let timeOutNetwork = setTimeout(() => {
+      loading.dismiss();
+      this.alertNetwork('Problemas com a conexão à internet :(', 'Ohh não!!');
+
+    }, 10000);
+   
+  
+ 
     let message:string;
     this.url ="https://battleshiptcc.000webhostapp.com/api/verifyUserName"
     this.http.post(this.url, { user_name }).toPromise().then((response) => {
@@ -80,10 +112,14 @@ export class SignUpScreenPage {
       verify.push(response.json());
       
       if (verify[0] == 'available'){
+        clearTimeout(timeOutNetwork);//net
+        loading.dismiss();
         message="Nickname Validado!";
         this.checkUser_name=true;
 
       }else{
+        clearTimeout(timeOutNetwork);//net
+        loading.dismiss();
         message = "Nickname Indisponível! Tente outro!";
         this.checkUser_name = false;
       }
@@ -102,25 +138,36 @@ export class SignUpScreenPage {
     }else{
       var verify =[];
       let message: string;
-      this.url = 'https://battleshiptcc.000webhostapp.com/api/verifyEmail';
+      
 
-      this.http.post(this.url, { user_name, name, email, sex, password }).toPromise().then((response) => {
+      let loading = this.loadingCtrl.create({
+        spinner: 'dots',
+        content: 'carregando'
+      });
+      loading.present();
+
+      //net
+      let timeOutNetwork = setTimeout(() => {
+        loading.dismiss();
+        this.alertNetwork('Problemas com a conexão à internet :(', 'Ohh não!!');
+
+      }, 10000);
+     
+
+      this.http.post('https://battleshiptcc.000webhostapp.com/api/verifyEmail', { user_name, name, email, sex, password }).toPromise().then((response) => {
           verify.push(response.json());
       
       console.log(verify[0]);
       if (verify[0] == 'available') {
+        
          this.url = 'https://battleshiptcc.000webhostapp.com/api/createNewPlayer';
          this.http.post(this.url, { user_name, name, email, sex, password }).toPromise().then((response) => {
+
             this.toastMessage('Cadastro realizado com Sucesso! Realize seu login!');
             
               // retornando à página de login            
-              let loading = this.loadingCtrl.create({
-                spinner: 'dots',
-                content: 'carregando'
-              });
-              loading.present();
-
-           
+              
+           clearTimeout(timeOutNetwork);//net     
               setTimeout(() => {
                  this.navCtrl.pop();
                   loading.dismiss();
@@ -131,6 +178,8 @@ export class SignUpScreenPage {
           });
 
       } else {
+        clearTimeout(timeOutNetwork);//net
+        loading.dismiss();
         this.toastMessage("Email informado já utilizado!");
               
       }

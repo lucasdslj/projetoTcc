@@ -46,6 +46,32 @@ export class ProfilePlayerScreenPage {
     public loadingCtrl: LoadingController, private geolocation: Geolocation, public storage: Storage) {
   }
 
+  alertNetwork(message, title) {
+    let alertBattle = this.alertCtrl.create({
+      title: title,
+      message: message,
+      buttons: [
+
+        {
+          text: 'Recarregar',
+          handler: () => {
+            this.ionViewDidEnter();
+
+          }
+        },
+        {
+          text: 'ok',
+          handler: () => {
+            this.navCtrl.pop();
+
+          }
+
+        }
+      ]
+    });
+    alertBattle.present()
+  }
+
   ionViewDidEnter() {
 
     let loading = this.loadingCtrl.create({
@@ -70,6 +96,10 @@ export class ProfilePlayerScreenPage {
       this.dataPlayer = this.dataPlayer[0];
       loading.dismiss();
       console.log("dados", this.dataPlayer[0]);
+
+    }).catch(()=>{
+      this.alertNetwork('Problemas com a conexão à internet :(', 'Ohh não!!');
+      loading.dismiss();
 
     });
   }

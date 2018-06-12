@@ -21,6 +21,8 @@ import { Storage } from '@ionic/storage';
 
 
 
+
+
 declare var google;
 
 @Component({
@@ -220,6 +222,25 @@ listAdversaryScreenOn(typeOfBattle) {
 
   }
 
+
+  alertNetwork(message, title) {
+    let alertBattle = this.alertCtrl.create({
+      title: title,
+      message: message,
+      buttons: [
+
+        {
+          text: 'Recarregar',
+          handler: () => {
+            location.reload();
+
+          }
+        }
+      ]
+    });
+    alertBattle.present()
+  }
+
   /*
    *Verificação de GPS status ->INICIO<-
    */
@@ -294,6 +315,7 @@ listAdversaryScreenOn(typeOfBattle) {
 ionViewDidLoad(){
   
 
+
   var loading = this.loadingCtrl.create({
     spinner: 'dots',
     content: 'carregando'
@@ -310,7 +332,15 @@ ionViewDidLoad(){
         loading.dismiss();
         this.loginScreenOn();
       }else{
-        console.log("not null");
+        //verificação de internet
+        let timeOutNetwork = setTimeout(() => {
+          loading.dismiss();
+          this.alertNetwork('Problemas com a conexão à internet :(','Ohh não!!');
+          
+        }, 10000);
+
+
+        console.log("not null");//teste
         this.homeScreenOn= true;
   
  
@@ -343,20 +373,26 @@ ionViewDidLoad(){
       }   
     });
 
+    
+    //timeout para assegurar a tribuição de valores no banco
     let setT = setTimeout(() => {
       if ((this.dataPlayer.length == 0) && (this.homeScreenOn == true)) {
-        location.reload();
+       // location.reload();
       }else{
+        loading.dismiss();
+        clearTimeout(timeOutNetwork);
         this.setLocation();
         clearInterval(setT);
-        loading.dismiss();
+        
       }
     }, 2000);
    
 
       }
     });
-      
+
+
+ 
   }
 
 

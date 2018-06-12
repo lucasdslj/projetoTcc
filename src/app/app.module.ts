@@ -27,6 +27,8 @@ import { SignUpScreenPage } from '../pages/sign-up-screen/sign-up-screen';
 import { ProfilePlayerScreenPage } from '../pages/profile-player-screen/profile-player-screen';
 import { IonicStorageModule } from '@ionic/storage';
 
+
+
 @NgModule({
   declarations: [
     MyApp,

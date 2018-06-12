@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { Http } from '@angular/http';
 import { Storage } from '@ionic/storage';
+import { AlertController } from 'ionic-angular';
 
 //Pages
 import { BattleScreenPage } from '../battle-screen/battle-screen';
@@ -24,7 +25,7 @@ export class ListAdversaryScreenPage {
   url: string;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public http: Http,
-     public loadingCtrl: LoadingController, public storage: Storage) {
+     public loadingCtrl: LoadingController, public storage: Storage, public alertCtrl: AlertController,) {
     
   }
 
@@ -32,6 +33,31 @@ export class ListAdversaryScreenPage {
   //Pages
   battleScreenPage = BattleScreenPage;
  
+  alertNetwork(message, title) {
+    let alertBattle = this.alertCtrl.create({
+      title: title,
+      message: message,
+      buttons: [
+
+        {
+          text: 'Recarregar',
+          handler: () => {
+            this.ionViewDidEnter();
+
+          }
+        },
+        {
+          text: 'ok',
+          handler: () => {
+            this.navCtrl.pop();
+
+          }
+
+        }
+      ]
+    });
+    alertBattle.present()
+  }
 
 
   ionViewDidEnter(){
@@ -48,6 +74,14 @@ export class ListAdversaryScreenPage {
       content: 'carregando'
     });
     loading.present();
+
+    //net
+    let timeOutNetwork = setTimeout(() => {
+
+      this.alertNetwork('Problemas com a conexão à internet :(', 'Ohh não!!');
+      loading.dismiss();
+
+    }, 10000);
     
 
     //Tratamento: Error trying to diff '[object Object]'
@@ -71,6 +105,7 @@ export class ListAdversaryScreenPage {
         this.opponentPlayers = this.opponentPlayers[0];
       
         if (len > 0) {
+          clearTimeout(timeOutNetwork);//net
           loading.dismiss();
           clearInterval(inter);
         }
@@ -92,7 +127,7 @@ export class ListAdversaryScreenPage {
 
         this.opponentPlayersRematch = this.opponentPlayersRematch[0];
 
-        console.log("re",this.opponentPlayersRematch );
+        console.log("re",this.opponentPlayersRematch );//teste
       
       });
 
@@ -127,10 +162,14 @@ export class ListAdversaryScreenPage {
     
     let user_name_adversary = aux[0].player_adversary;
 
-    console.log("aa", user_name_adversary);
+    console.log("aa", user_name_adversary);//teste
 
     if(typeB == 'rematch'){
       this.http.post('https://battleshiptcc.000webhostapp.com/api/delRematch', { user_name, user_name_adversary }).toPromise().then((response) => {
+      }).catch(()=>{
+        this.alertNetwork('Problemas com a conexão à internet :(', 'Ohh não!!');
+        loading.dismiss();
+        
       });
 
     }

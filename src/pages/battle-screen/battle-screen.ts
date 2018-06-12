@@ -54,7 +54,7 @@ export class BattleScreenPage {
   user_name_adversary;
   
   setInter:any;
-  typeOfBatte;
+  typeOfBattle;
   public possibleBattle = "possible";
   public timeBreak = false;
   public user_name:string;
@@ -95,13 +95,13 @@ export class BattleScreenPage {
 
   playerBombThrow(coordinates){
 
-     var geoX = 0, geoY = 0, valueX= false, valueY = false;
+    var geoX = 0, geoY = 0, valueX= false, valueY = false;
 
     this.nativeAudio.play('bomb');
-    //this.smartAudio.play('bombWater');
+    
     var checkEnd = false;
 
-    //time para decremntar variavel em tela, bombas
+    //time para decrementar variavel em tela, bombas
     setTimeout(() => {
       this.amountBomb -= 1;
     }, 1800);
@@ -109,7 +109,7 @@ export class BattleScreenPage {
 
     parseInt(coordinates.x);
     parseInt(coordinates.y);
-    this.btnDisable = true;
+    this.btnDisable = true; // controle para evitar o jogador atirar em determinados momentos
     
     //acertou
     if ((coordinates.x == this.battleData[4][0]) && (coordinates.y == this.battleData[4][1]) ){
@@ -127,6 +127,7 @@ export class BattleScreenPage {
 
           this.openModalScreenVictory('victory', parseInt(this.dataPlayer[0].amount_xp), parseInt(this.dataOpponentPlayer[0].xp_given),
             parseInt(this.dataPlayer[0].amount_level_up) + 1, this.user_name, parseInt(this.dataPlayer[0].level) );
+
           clearInterval(this.setInter);
           checkEnd = true;
 
@@ -156,20 +157,20 @@ export class BattleScreenPage {
           geoX = this.battleData[5][0][i];
           //controle de coordenada encontrada no tabuleiro
           valueX = true;
-          console.log("x:", geoX);
+          console.log("x:", geoX);// teste
         }
         if (coordinates.y == this.battleData[6][1][i]){
           geoY = this.battleData[6][0][i];
           //controle de coordenada encontrada no tabuleiro
-          valueY=true;
-          console.log("y: ",geoY);
+          valueY = true; 
+          console.log("y: ",geoY); // teste
         }   
                      
       }
 
       //passando valor inverso de X e Y, Plotagem no tabuleiro
       this.markerBoardBomb(this.map, geoY, geoX, 'bombWater4.gif', '');
-      console.log("errou");
+      console.log("errou"); // teste
 
     
       setTimeout(() => {
@@ -184,7 +185,7 @@ export class BattleScreenPage {
           toast.present();
 
         } else {
-          // Coordendas informadas pelo usuário não correspondem À do inimigo
+          // Coordendas informadas pelo usuário não correspondem à do inimigo
           let toast = this.toastCtrl.create({
             message: 'A Bomba caiu no mar :(',
             duration: 2000,
@@ -241,30 +242,30 @@ export class BattleScreenPage {
 
 }
 
-
+//arredondamento
 getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-
+//Player adversário acerta
 bombHit(){
 
   if (this.timeBreak == false) {
     this.nativeAudio.play('bomb');
-   /// this.smartAudio.play('bombWater');
+   
     setTimeout(() => {
-      this.markerBoardBomb(this.map, this.battleData[1][0], this.battleData[1][1], 'bombWater4.gif', '');
+      this.markerBoardBomb(this.map, this.battleData[1][0], this.battleData[1][1], 'bombWater4.gif', ''); //coordenada do jogador
 
-      console.log("somatorio de dano antes", this.amountDamageP2);
+      console.log("somatorio de dano antes", this.amountDamageP2);//teste
       this.amountDamageP2 = this.amountDamageP2+ parseInt(this.dataOpponentPlayer[0].attack_force);
-      console.log("somatorio de dano", this.amountDamageP2);
+      console.log("somatorio de dano", this.amountDamageP2);//teste
 
       // este "100" que divide é para substituir pela quantidade de vida do Player 1 (banco de dados local)
       this.amountLifeP1 = (100 - ((this.amountDamageP2 * 100) / parseInt(this.dataPlayer[0].amount_life))) + '%';
 
-      console.log("Life", this.amountLifeP1)
+      console.log("Life", this.amountLifeP1);//teste
 
       let toast = this.toastCtrl.create({
         message: this.dataOpponentPlayer[0].patent + ' ' + this.dataOpponentPlayer[0].user_name + ' Acertou seu navio!',
@@ -279,7 +280,6 @@ bombHit(){
         this.amountLifeP1 = "0%";
 
         //Derrota
-
         this.openModalScreenDefeat('defeat', "Seu navio afundou!", this.user_name);
         clearInterval(this.setInter);
 
@@ -290,21 +290,22 @@ bombHit(){
 
   }
 
+//Player adversario erra
 bombMiss(start1, end1, start2, end2){
   if (this.timeBreak == false) {
     this.nativeAudio.play('bomb');
-  //  this.smartAudio.play('bombWater');
      
 
     let x, y, rs = [];
     x = this.getRandomInt(start1, end1);
     y = this.getRandomInt(start2, end2);
+    //evita-se que o tiro aleatório de erro acerte um dos adversários
     for (let i = 0; i < 1;) {
       if ((x == this.battleData[3][0]) || (y == this.battleData[3][1]) || (x == this.battleData[4][0]) || (y == this.battleData[4][1])) {
         x = this.getRandomInt(start1, end1);
         y = this.getRandomInt(start2, end2);
       } else {
-        i = 1;
+        i = 1;//saída do for
       }
     }
 
@@ -320,7 +321,7 @@ bombMiss(start1, end1, start2, end2){
  
    }, 2005);
      
-    
+    ///retorno
     rs.push(x);
     rs.push(y);
     return rs;
@@ -331,18 +332,21 @@ bombMiss(start1, end1, start2, end2){
 
 adversaryBombTrow(level){
 
-    let checkbomb = this.getRandomInt(0, 100);
+    
     let aux = this.battleData[0].length - 1;
     let coordBomb = [];
     let middle;
+
+  let checkbomb = this.getRandomInt(0, 100); //sorteio de acerto do tiro
+
     if(this.timeBreak == false){
       
     switch (level) {
       //Lv. 1
       case 1:
         if (checkbomb < 30) {
-          console.log("check", checkbomb);
-            this.bombHit();
+          console.log("check", checkbomb);//teste
+          this.bombHit();
         }else{ 
           coordBomb = this.bombMiss(0, aux, 0, aux);         
           this.markerBoardBomb(this.map, this.battleData[0][coordBomb[0]][coordBomb[1]][0], this.battleData[0][coordBomb[0]][coordBomb[1]][1], 'bombWater4.gif', '');
@@ -355,7 +359,7 @@ adversaryBombTrow(level){
       case 2:
         if (checkbomb < 40) {
           this.bombHit();
-          console.log("check ", checkbomb);
+          console.log("check ", checkbomb);//teste
         }else{
           middle = aux / 2;
           Math.floor(middle);
@@ -439,7 +443,7 @@ adversaryBombTrow(level){
         break;
       
 
-      default:{
+      default:{///teste
         let toast = this.toastCtrl.create({
           message: 'entrouuuu!!!!!!!',
           duration: 2000,
@@ -448,7 +452,7 @@ adversaryBombTrow(level){
         toast.present();
 
       }
-        break;
+        break;//fim teste
     
     }
     setTimeout(() => {
@@ -588,23 +592,40 @@ getDataPlayer(){
   });
 }
 
-ionViewDidEnter() {
+  alertNetwork(message, title) {
+    let alertBattle = this.alertCtrl.create({
+      title: title,
+      message: message,
+      buttons: [
 
- 
+        {
+          text: 'ok',
+          handler: () => {
+
+            this.navCtrl.pop();
+
+          }
+        }
+      ]
+    });
+    alertBattle.present()
+  }
+
+ionViewDidEnter() {
 
 
     var a = 1; //auxiliar para decremento do tempo
     
     this.user_name = this.navParams.get('user_name');
     
-    this.typeOfBatte = this.navParams.get('typeB');
+    this.typeOfBattle = this.navParams.get('typeB');
 
     this.getDataPlayer();
 
     console.log("user_name:", this.user_name);
     this.dataOpponentPlayer = this.navParams.get('aux'); //recebendo parâmentros da page
 
-    if (this.typeOfBatte == 'rematch') {
+    if (this.typeOfBattle == 'rematch') {
       this.user_name_adversary = this.dataOpponentPlayer[0].player_adversary;
     } else{
       this.user_name_adversary = this.dataOpponentPlayer[0].user_name;
@@ -620,7 +641,7 @@ ionViewDidEnter() {
     var timeStamp = this.toTimestamp(this.dataOpponentPlayer[0].time)
     this.time = this.subTime(timeStamp, 0);
     
-    //tempo
+    //tempo contador
     setTimeout(() => {
    
     this.setInter = setInterval(() => {
@@ -632,7 +653,7 @@ ionViewDidEnter() {
         this.timeBreak == true;
         this.openModalScreenDefeat('defeat',"O Tempo Acabou!", this.user_name);
 
-        console.log("Tempo encerrado");
+        console.log("Tempo encerrado");//teste
         clearInterval(this.setInter);
       }
 
@@ -640,15 +661,16 @@ ionViewDidEnter() {
     
   }, 3500);
 
-    console.log("tempo",this.time);
+    console.log("tempo",this.time); // teste
     
 
-    console.log("Page Battle", this.dataOpponentPlayer);
+    console.log("Page Battle", this.dataOpponentPlayer); // teste
     
         //Consutrução do Tabuleiro
   
-  this.nativeAudio.loop('soundtrack');
-    this.initBattle(); 
+  this.nativeAudio.play('soundtrack'); // alterar
+
+  this.initBattle(); 
   
     
 
@@ -670,13 +692,9 @@ ionViewDidEnter() {
 
   //verificar o pause de todos plays -> executa antes da page sair 
   ionViewCanLeave() {
+
     this.nativeAudio.stop('soundtrack');
-    for (var i = 1; i < 5; i++) {
-
-     // this.smartAudio.stopTracker('tracker');
-      this.trackerPause = true;
-    }
-
+    this.trackerPause = true;
     clearInterval(this.setInter);
   }
 
@@ -687,9 +705,9 @@ open(){
   // this.openModalScreenDefeat('defeat',"O Tempo Acabou!");
   this.openModalScreenVictory('victory', parseInt(this.dataPlayer[0].amount_xp), parseInt(this.dataOpponentPlayer[0].xp_given),
     parseInt(this.dataPlayer[0].amount_level_up) + 1, this.user_name, parseInt(this.dataPlayer[0].level) );
-}
+}///////////////
 
-  //Modal
+  //Modal derrota
   openModalScreenDefeat(outType, defeatMessage, user_name){
     let myModal = this.modalCtrl.create(ModalBattleScreenPage, { outType, defeatMessage, user_name});
     myModal.present();
@@ -698,10 +716,11 @@ open(){
 
   }
 
+  //modal vitória
   openModalScreenVictory(outType, xpCurrent, xpGained, xpLevelUp, user_name, level) {
     
     let user_name_adversary = this.user_name_adversary;
-    let typeOfBattle = this.typeOfBatte;
+    let typeOfBattle = this.typeOfBattle;
     let myModal = this.modalCtrl.create(ModalBattleScreenPage, { outType, xpCurrent, xpGained, xpLevelUp, user_name, level, user_name_adversary, typeOfBattle});
     myModal.present();
 
@@ -716,7 +735,7 @@ open(){
   test(){
    // this.smartAudio.stopTracker('tracker');
     this.trackerPause = true;
-  }
+  }///////////////
 
 
 
@@ -726,11 +745,18 @@ open(){
     var i, j;
     this.battleData = [];
 
-    var loading = this.loadingCtrl.create({
+    let loading = this.loadingCtrl.create({
       spinner: 'dots',
       content: 'carregando'
     });
     loading.present();
+
+    //net
+    let timeOutNetwork = setTimeout(() => {
+      loading.dismiss();
+      this.alertNetwork('Problemas com a conexão à internet :(', 'Ohh não!!');
+
+    }, 10000);
 
     this.http.get(this.url).toPromise().then((response) => {
       this.battleData.push(response.json());
@@ -738,6 +764,7 @@ open(){
       
       if (this.battleData[0] == "impossible") {
         //set interval serve para ter a certeza do andamento 
+        clearTimeout(timeOutNetwork);//net
         setTimeout(() => {
           this.alertBattleImpossible();
           clearInterval(this.setInter);
@@ -749,6 +776,7 @@ open(){
         }, 3550);
           
       }else{
+        clearTimeout(timeOutNetwork);//net
 
         this.battleData = this.battleData[0];
         for (j = 0; j < this.battleData[0].length; j++) {
@@ -787,6 +815,7 @@ open(){
         this.map = this.createMap(this.battleData[0], this.battleData[5], this.battleData[6], this.battleData[1], this.battleData[2]);
        
        
+        // verofocação de término de carregamento
         var inter = setTimeout(() => {
         if (this.map.controls.length > 0) {
           loading.dismiss();
@@ -919,7 +948,7 @@ open(){
     map.fitBounds(edgeBounds, -5);
 
     //Controle de Zoom mínimo e máximo
-    i = 0; 
+    i = 0; //verificar utilização
     google.maps.event.addListener(map, 'idle', function () {
       if(i < 1){
         console.log(map.getZoom());
@@ -939,6 +968,8 @@ open(){
         map.fitBounds(edgeBounds, -5);
       }
     });
+
+    //fazer switch para alterar figura do barco
 
     //Platagem Das Embarcações Players
     this.markerBoard(map, coordPlayer1[0], coordPlayer1[1], 'barco1.png', google.maps.Animation.DROP);

@@ -5,19 +5,23 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 
 import { MyApp } from './app.component';
-
+import { HomePage } from '../pages/home/home';
 import { Geolocation } from '@ionic-native/geolocation';
 import { HttpModule } from '@angular/http';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { NativeAudio } from '@ionic-native/native-audio';
 import { SmartAudioProvider } from '../providers/smart-audio/smart-audio';
+import { ScreenOrientation } from '@ionic-native/screen-orientation';
+import { AndroidPermissions } from '@ionic-native/android-permissions';
+
+
 
 import { NgProgressModule} from 'ngx-progressbar';
 
 import { ProgressBarComponent } from '../components/progress-bar/progress-bar';
 
 //Pages
-import { HomePage } from '../pages/home/home';
+
 import { BattleScreenPage } from '../pages/battle-screen/battle-screen';
 import { ListAdversaryScreenPage } from '../pages/list-adversary-screen/list-adversary-screen';
 import { TestePage } from '../pages/teste/teste';
@@ -49,6 +53,7 @@ import { IonicStorageModule } from '@ionic/storage';
     HttpModule,
     HttpClientModule,
     NgProgressModule,
+    
     IonicStorageModule.forRoot({
       name: '__mydb',
       driverOrder: ['indexeddb', 'sqlite', 'websql' ]
@@ -71,9 +76,10 @@ import { IonicStorageModule } from '@ionic/storage';
   providers: [
     StatusBar,
     SplashScreen,
-    
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
     Geolocation,
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    ScreenOrientation,
+    AndroidPermissions,
     NativeAudio,
     SmartAudioProvider 
   ]

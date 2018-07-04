@@ -17,7 +17,6 @@ export class SignUpScreenPage {
   formSignUp: any;
   formUserName:  any;
   password_type: string = 'password';
-  url: string;
   sex: any;
   checkUser_name=false;
 
@@ -101,13 +100,13 @@ export class SignUpScreenPage {
       loading.dismiss();
       this.alertNetwork('Problemas com a conexão à internet :(', 'Ohh não!!');
 
-    }, 10000);
+    }, 15000);
    
   
  
     let message:string;
-    this.url ="https://battleshiptcc.000webhostapp.com/api/verifyUserName"
-    this.http.post(this.url, { user_name }).toPromise().then((response) => {
+   
+    this.http.post('https://battleshiptcc.000webhostapp.com/api/verifyUserName', { user_name }).toPromise().then((response) => {
       let verify = [];
       verify.push(response.json());
       
@@ -151,7 +150,7 @@ export class SignUpScreenPage {
         loading.dismiss();
         this.alertNetwork('Problemas com a conexão à internet :(', 'Ohh não!!');
 
-      }, 10000);
+      }, 15000);
      
 
       this.http.post('https://battleshiptcc.000webhostapp.com/api/verifyEmail', { user_name, name, email, sex, password }).toPromise().then((response) => {
@@ -160,8 +159,8 @@ export class SignUpScreenPage {
       console.log(verify[0]);
       if (verify[0] == 'available') {
         
-         this.url = 'https://battleshiptcc.000webhostapp.com/api/createNewPlayer';
-         this.http.post(this.url, { user_name, name, email, sex, password }).toPromise().then((response) => {
+         
+        this.http.post('https://battleshiptcc.000webhostapp.com/api/createNewPlayer', { user_name, name, email, sex, password }).toPromise().then((response) => {
 
             this.toastMessage('Cadastro realizado com Sucesso! Realize seu login!');
             
@@ -195,22 +194,3 @@ export class SignUpScreenPage {
   }
 
 }
-
-
-/*<ion-item >
-  <ion-label color = "primary" > Sexo < /ion-label>
-    < /ion-item>
-
-
-    < ion - segment >
-
-    <ion-segment - button value = "masculino" checked >
-      Masculino
-      < /ion-segment-button>
-      < ion - segment - button value = "feminino" >
-        Feminino
-        < /ion-segment-button>
-
-        < /ion-segment>
-
-        < /ion-row>*/

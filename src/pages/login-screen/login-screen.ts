@@ -33,7 +33,7 @@ export class LoginScreenPage {
   aux = false; // auxilio desenvolvimento
   password_type: string = 'password';
 
-  private url ='https://battleshiptcc.000webhostapp.com/api/login';
+  
   constructor(public navCtrl: NavController, public navParams: NavParams, public loadingCtrl: LoadingController, public http: Http, 
     public formBuilder: FormBuilder, private toastCtrl: ToastController, public storage: Storage, public alertCtrl: AlertController) {
 
@@ -110,9 +110,9 @@ export class LoginScreenPage {
       loading.dismiss();
       this.alertNetwork('Problemas com a conexão à internet :(', 'Ohh não!!', email, password);
 
-    }, 10000);
+    }, 15000);
 
-    this.http.post(this.url, {email, password}).toPromise().then((response) =>{
+    this.http.post('https://battleshiptcc.000webhostapp.com/api/login', {email, password}).toPromise().then((response) =>{
       console.log(response);
       this.userData.push(response.json());
 
@@ -147,7 +147,7 @@ export class LoginScreenPage {
         this.navCtrl.setRoot(this.homePage);
         loading.dismiss();
 
-      }else{
+      } if (this.userData[0] == "err"){
         clearTimeout(timeOutNetwork);//net
         this.userData=[];
         loading.dismiss();

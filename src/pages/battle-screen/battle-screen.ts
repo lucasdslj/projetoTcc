@@ -659,7 +659,7 @@ ionViewDidEnter() {
 
     }, 1000);
     
-  }, 3500);
+  }, 3000);
 
     console.log("tempo",this.time); // teste
     
@@ -756,7 +756,7 @@ open(){
       loading.dismiss();
       this.alertNetwork('Problemas com a conexão à internet :(', 'Ohh não!!');
 
-    }, 10000);
+    }, 15000);
 
     this.http.get(this.url).toPromise().then((response) => {
       this.battleData.push(response.json());
@@ -945,7 +945,7 @@ open(){
     }
 
     //Posicionando todos os pontos na tela
-    map.fitBounds(edgeBounds, -5);
+    map.fitBounds(edgeBounds, -4);
 
     //Controle de Zoom mínimo e máximo
     i = 0; //verificar utilização
@@ -965,7 +965,7 @@ open(){
       }
       else {
         //map.setCenter(edgeBounds.getCenter());
-        map.fitBounds(edgeBounds, -5);
+        map.fitBounds(edgeBounds, -4);
       }
     });
 

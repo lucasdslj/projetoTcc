@@ -56,8 +56,10 @@
 
           <h5>
             <b>
+              <font face="Helvetica"> Xp: {{dataP.amount_xp}}</font><br>
               <font face="Helvetica"> Vitórias: {{dataP.amount_victories_total}}</font>
-              <font face="Helvetica">Derrotas: {{dataP.amount_defeats_total}}</font>
+              <font face="Helvetica">Derrotas: {{dataP.amount_defeats_total}}</font> <br>
+              <font face="Helvetica">Nº de Partidas: {{dataP.amount_defeats_total + dataP.amount_victories_total }}</font>
             </b>
           </h5>
       </ion-col>
@@ -77,8 +79,8 @@
     </ion-grid>
   
 
-  <button ion-button color="secundary"  (click)="setLocation()"  round outline>Atualizar Localização</button>
-  <button ion-button color="danger" (click)="logout()" round outline>Sair</button>
+ <!-- <button ion-button color="secundary"  (click)="setLocation()"  round outline>Atualizar Localização</button>-->
+  <button ion-button color="danger" (click)="logout()" round full>Sair</button>
 
   
 </ion-content>

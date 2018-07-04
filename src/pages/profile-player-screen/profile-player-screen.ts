@@ -73,12 +73,21 @@ export class ProfilePlayerScreenPage {
   }
 
   ionViewDidEnter() {
+    
 
     let loading = this.loadingCtrl.create({
       spinner: 'dots',
       content: 'carregando'
     });
     loading.present();
+    
+    //net
+    let timeOutNetwork = setTimeout(() => {
+
+      this.alertNetwork('Problemas com a conexão à internet :(', 'Ohh não!!');
+      loading.dismiss();
+
+    }, 15000);
 
     this.user_name = this.navParams.get('user_name');
 
@@ -89,17 +98,14 @@ export class ProfilePlayerScreenPage {
 
     this.dataPlayer = [];
 
-    let url = 'https://battleshiptcc.000webhostapp.com/api/getPlayer';
+    
     let user_name = this.user_name;
-    this.http.post(url, { user_name }).toPromise().then((response) => {
+    this.http.post('https://battleshiptcc.000webhostapp.com/api/getPlayer', { user_name }).toPromise().then((response) => {
       this.dataPlayer.push(response.json());
       this.dataPlayer = this.dataPlayer[0];
       loading.dismiss();
+      clearTimeout(timeOutNetwork);
       console.log("dados", this.dataPlayer[0]);
-
-    }).catch(()=>{
-      this.alertNetwork('Problemas com a conexão à internet :(', 'Ohh não!!');
-      loading.dismiss();
 
     });
   }
@@ -182,7 +188,7 @@ export class ProfilePlayerScreenPage {
 
 
   
-
+        // Vá em: configurações->aplicativos->selecione este app->permissões->permita a localização
   }
 
 

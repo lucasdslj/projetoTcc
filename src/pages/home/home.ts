@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, Platform  } from 'ionic-angular';
 
-import { LoadingController } from 'ionic-angular';
+
 import { Geolocation } from '@ionic-native/geolocation';
+import { LoadingController } from 'ionic-angular';
+import 'rxjs/add/operator/map';
 
-import 'rxjs/add/operator/map'
+
 
 import { Http, HttpModule  } from '@angular/http';
 import {NgProgress}from 'ngx-progressbar';
@@ -16,6 +18,8 @@ import { ListAdversaryScreenPage } from '../list-adversary-screen/list-adversary
 import { TestePage } from '../teste/teste';
 import { LoginScreenPage } from '../login-screen/login-screen';
 import { ProfilePlayerScreenPage } from '../profile-player-screen/profile-player-screen';
+import { ScreenOrientation } from '@ionic-native/screen-orientation';
+import { AndroidPermissions } from '@ionic-native/android-permissions';
 
 import { Storage } from '@ionic/storage';
 
@@ -58,12 +62,22 @@ export class HomePage {
   
   homeScreenOn = false;
 
-  constructor(public navCtrl: NavController, public loadingCtrl: LoadingController, private http: Http, public alertCtrl: AlertController,
-    public ngProgress: NgProgress, private geolocation: Geolocation, public storage: Storage) {
+  constructor(public navCtrl: NavController, public geolocation: Geolocation, public platform: Platform, public loadingCtrl: LoadingController, 
+    private http: Http, public alertCtrl: AlertController, public ngProgress: NgProgress, public storage: Storage,
+     private screenOrientation: ScreenOrientation, private androidPermissions: AndroidPermissions ) {
 
-
+   // for (let i = 0; i < 2; i++) {
     
-   }
+
+    this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION).then(
+
+      err => this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION)
+    );
+
+    this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+    
+ //  }
+  }
 
   //Pages 
   battleScreenPage = BattleScreenPage;
@@ -75,6 +89,7 @@ export class HomePage {
 
   //barra de progresso gnx-Progresso  //aux desenvolvimento
   ngOnInit(){
+    
 
     this.ngProgress.start();
     this.ngProgress.set(0.8);
@@ -309,12 +324,14 @@ listAdversaryScreenOn(typeOfBattle) {
   /*
    * Verificação de GPS status ->Fim<-
    */
+  //Vá em: configurações->aplicativos->selecione este app->permissões->permita a localização
 
 
 
 ionViewDidLoad(){
   
 
+  
 
   var loading = this.loadingCtrl.create({
     spinner: 'dots',
@@ -337,7 +354,7 @@ ionViewDidLoad(){
           loading.dismiss();
           this.alertNetwork('Problemas com a conexão à internet :(','Ohh não!!');
           
-        }, 10000);
+        }, 15000);
 
 
         console.log("not null");//teste
@@ -352,13 +369,13 @@ ionViewDidLoad(){
         this.user_name = value;
         
         setTimeout(() => {
-          this.url = 'https://battleshiptcc.000webhostapp.com/api/getPlayer';
+          
           user_name = this.user_name;
 
-          this.http.post(this.url, { user_name }).toPromise().then((response) => {
-            this.dataPlayer.push(response.json());
-            this.dataPlayer = this.dataPlayer[0];
-            console.log("dados", this.dataPlayer[0]); //teste
+          this.http.post('https://battleshiptcc.000webhostapp.com/api/getPlayer', { user_name }).toPromise().then((response) => {
+            this.dataPlayer= response.json();
+            
+            //console.log("dados", this.dataPlayer[0]); //teste
             //normatização
            
 
@@ -367,6 +384,20 @@ ionViewDidLoad(){
             this.loadProgressDefense = 100 - (parseInt(this.dataPlayer[0].defense_force) * 100) / 50;
             this.attackAmount = parseInt(this.dataPlayer[0].attack_force);
             this.defenseAmount = parseInt(this.dataPlayer[0].defense_force);
+            
+            //timeout para assegurar a tribuição de valores no banco
+            let setT = setTimeout(() => {
+              if ((this.dataPlayer.length == 0) && (this.homeScreenOn == true)) {
+                // location.reload();
+              } else {
+                loading.dismiss();
+                clearTimeout(timeOutNetwork);
+               // this.setLocation();
+                clearInterval(setT);
+
+              }
+            }, 1500)
+
           });
         }, 250);
 
@@ -374,18 +405,7 @@ ionViewDidLoad(){
     });
 
     
-    //timeout para assegurar a tribuição de valores no banco
-    let setT = setTimeout(() => {
-      if ((this.dataPlayer.length == 0) && (this.homeScreenOn == true)) {
-       // location.reload();
-      }else{
-        loading.dismiss();
-        clearTimeout(timeOutNetwork);
-        this.setLocation();
-        clearInterval(setT);
-        
-      }
-    }, 2000);
+   ;
    
 
       }

@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-an
 import { Http } from '@angular/http';
 import { Storage } from '@ionic/storage';
 import { AlertController } from 'ionic-angular';
+import { Geolocation } from '@ionic-native/geolocation';
 
 //Pages
 import { BattleScreenPage } from '../battle-screen/battle-screen';
@@ -20,11 +21,16 @@ export class ListAdversaryScreenPage {
   public opponentPlayers = [];
   public opponentPlayersRematch = [];
   public stateRematch;
+  public opponentPlayerSelected: any;
+  public typeB: any;
 
+
+  public lat: any;
+  public lng: any;
   //modificar 
-  url: string;
+ 
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public http: Http,
+  constructor(public navCtrl: NavController, public navParams: NavParams, public http: Http, public geolocation: Geolocation,
      public loadingCtrl: LoadingController, public storage: Storage, public alertCtrl: AlertController,) {
     
   }
@@ -47,6 +53,7 @@ export class ListAdversaryScreenPage {
           }
         },
         {
+          
           text: 'ok',
           handler: () => {
             this.navCtrl.pop();
@@ -58,6 +65,109 @@ export class ListAdversaryScreenPage {
     });
     alertBattle.present()
   }
+
+
+  alertLocation(message, title) {
+    let alertBattle = this.alertCtrl.create({
+      title: title,
+      message: message,
+      buttons: [
+
+        {
+          text: 'Tentar novamente',
+          handler: () => {
+            this.setLocation(this.opponentPlayerSelected, this.typeB );
+
+          }
+        },
+        {
+          text: 'Ok',
+          handler: () => {
+          
+
+          }
+        }
+
+      ]
+    });
+    alertBattle.present()
+  }
+
+  alertLocationSuccess(message, title) {
+    let alertBattle = this.alertCtrl.create({
+      title: title,
+      message: message,
+      buttons: [
+
+        {
+          text: 'Vamos lá!',
+          handler: () => {
+            this.battleScreenOn()
+
+          }
+        }
+      ]
+    });
+    alertBattle.present();
+  }
+
+  setDataLocation(lat, lng) {
+    let user_name = this.user_name
+  //  this.alertLocation('oinnn!', 'Ooh não!!! :(');
+    this.http.post('https://battleshiptcc.000webhostapp.com/api/setLocation', { user_name, lat, lng }).toPromise().then((response) => {
+    let rs: any;
+    rs = response.json();
+    //  this.alertLocation('oinnnnnnnnnnnnnnnnnnnnnn!', 'Ooh não!!! :(');
+      console.log(response);
+      
+      if (rs == "success") {
+      this.alertLocationSuccess('Localização coletada com sucesso! Pode desligar seu GPS se desejar! ;)', 'Tudo certo, hora de batalhar!');
+    
+      }  else{
+    this.alertLocation('Por favor ative seu Gps ou certifique-se de ter concedido as permissões necessárias TT!', 'Ooh não!!! :(');
+      }
+    
+      
+
+    });
+
+  }
+
+
+  setLocation(opponentPlayerSelected, typeB) {
+    let loading = this.loadingCtrl.create({
+      spinner: 'dots',
+      content: 'Coletando coordenadas'
+    });
+    loading.present();
+    this.opponentPlayerSelected = opponentPlayerSelected;
+    this.typeB = typeB;
+
+    var options = {
+      enableHighAccuracy: true,
+      timeout: 2000,
+      maximumAge: 0
+    };
+
+
+    this.geolocation.getCurrentPosition(options).then((res) => {
+
+      this.lat = res.coords.latitude;
+      this.lng = res.coords.longitude;
+      
+      loading.dismiss();
+      this.setDataLocation(this.lat, this.lng);
+
+
+    }).catch(() => {
+      loading.dismiss();
+      this.alertLocation('Por favor ative seu Gps ou certifique-se de ter concedido as permissões necessárias!', 'Ooh não!!! :(');
+      // Vá em: configurações->aplicativos->selecione este app->permissões->permita a localização
+    });
+
+  }
+
+
 
 
   ionViewDidEnter(){
@@ -81,7 +191,7 @@ export class ListAdversaryScreenPage {
       this.alertNetwork('Problemas com a conexão à internet :(', 'Ohh não!!');
       loading.dismiss();
 
-    }, 10000);
+    }, 15000);
     
 
     //Tratamento: Error trying to diff '[object Object]'
@@ -92,9 +202,9 @@ export class ListAdversaryScreenPage {
     var len;
     var inter = setTimeout(() => {
 
-      this.url = 'https://battleshiptcc.000webhostapp.com/api/opponentPlayers/' + this.user_name;
+      
 
-      this.http.get(this.url).toPromise().then((response) => {
+      this.http.get('https://battleshiptcc.000webhostapp.com/api/opponentPlayers/' + this.user_name).toPromise().then((response) => {
         this.opponentPlayers.push(response.json());
         len = this.opponentPlayers[0].length;
 
@@ -140,7 +250,9 @@ export class ListAdversaryScreenPage {
   }
 
   
-  battleScreenOn(opponentPlayerSelected, typeB){
+  battleScreenOn(){
+
+    
 
     let user_name = this.user_name;
     
@@ -154,17 +266,17 @@ export class ListAdversaryScreenPage {
       
     //}, 5000);
     
-    console.log("Page List Opponents",opponentPlayerSelected); //aux desenvolvimento
+    console.log("Page List Opponents",this.opponentPlayerSelected); //aux desenvolvimento
     
     var aux = [];
     //convertando em um array
-    aux[0] = opponentPlayerSelected;
+    aux[0] = this.opponentPlayerSelected;
     
     let user_name_adversary = aux[0].player_adversary;
 
     console.log("aa", user_name_adversary);//teste
 
-    if(typeB == 'rematch'){
+    if(this.typeB == 'rematch'){
       this.http.post('https://battleshiptcc.000webhostapp.com/api/delRematch', { user_name, user_name_adversary }).toPromise().then((response) => {
       }).catch(()=>{
         this.alertNetwork('Problemas com a conexão à internet :(', 'Ohh não!!');
@@ -177,6 +289,7 @@ export class ListAdversaryScreenPage {
     setTimeout(() => {
       //this.navCtrl.push(this.battleScreenPage);
       loading.dismiss();
+      let typeB = this.typeB;
       this.navCtrl.push(this.battleScreenPage, { aux, user_name, typeB  });
 
     }, 1000);

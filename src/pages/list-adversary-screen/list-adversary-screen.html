@@ -63,7 +63,7 @@
                     </ion-row>
                     
                     <ion-row> 
-                    <button ion-button (click)="battleScreenOn(opPlayer, 'newBattle')" color="danger" round> Desafiar </button>
+                    <button ion-button (click)="setLocation(opPlayer, 'newBattle')" color="danger" round> Desafiar </button>
                    
                     </ion-row>
                    
@@ -127,7 +127,7 @@
                   </ion-row>
         
                   <ion-row>
-                    <button ion-button (click)="battleScreenOn(opPlayerR, 'rematch')" color="danger" round> Desafiar </button>
+                    <button ion-button (click)="setLocation(opPlayerR, 'rematch')" color="danger" round> Desafiar </button>
         
                   </ion-row>
         
@@ -156,7 +156,7 @@
     </ion-list>
   
   </div>
-
+{{response}}
 
 </ion-content>
 

@@ -18,9 +18,9 @@
 
     <ion-grid *ngFor="let dataP of dataPlayer">
       <ion-row>
-        <ion-col>
+        <ion-col [ngSwitch]="dataP.patent">
   
-          <div align="left" [ngSwitch]="dataP.patent">
+          <div align="left" *ngIf="dataP.sex=='masculino'">
             <img src="assets/imgs/cabo.png" *ngSwitchCase="'Cabo'" class="img" />
             <img src="assets/imgs/sargento.png" *ngSwitchCase="'Sargento'" class="img" />
             <img src="assets/imgs/tenente.png" *ngSwitchCase="'Tenente'" class="img" />
@@ -29,7 +29,17 @@
             <h3 align="center">
               <b> Lv. {{dataP.level}} </b>
             </h3>
-  
+          </div>
+          
+          <div align="left" *ngIf="dataP.sex=='feminino'">
+            <img src="assets/imgs/caba.png" *ngSwitchCase="'Cabo'" class="img" />
+            <img src="assets/imgs/sargenta.png" *ngSwitchCase="'Sargento'" class="img" />
+            <img src="assets/imgs/tenenta.png" *ngSwitchCase="'Tenente'" class="img" />
+            <img src="assets/imgs/capita.png" *ngSwitchCase="'Capitão'" class="img" />
+            <img src="assets/imgs/almiranta.png" *ngSwitchCase="'Almirante'" class="img" />
+            <h3 align="center">
+              <b> Lv. {{dataP.level}} </b>
+            </h3>
           </div>
         </ion-col>
   
@@ -65,9 +75,14 @@
       </ion-col>
       <ion-col>
         <h5>
-          <b>
-            <font face="Helvetica"> Embarcação: {{dataP.ship}}</font>
-            <img src="assets/imgs/barco1.png"   />
+          <b  [ngSwitch]="dataP.patent">
+            <font face="Helvetica"> Embarcação:</font>
+            <img src="assets/imgs/barco1SP.png" *ngSwitchCase="'Cabo'" class="img" />
+            <img src="assets/imgs/barco2SP.png" *ngSwitchCase="'Sargento'" class="img" />
+            <img src="assets/imgs/barco3SP.png" *ngSwitchCase="'Tenente'" class="img" />
+            <img src="assets/imgs/barco4SP.png" *ngSwitchCase="'Capitão'" class="img" />
+            <img src="assets/imgs/barco5SP.png" *ngSwitchCase="'Almirante'" class="img" />
+            <font align="center" face="Helvetica">{{dataP.ship}}</font>
           </b>
         </h5>
       </ion-col>

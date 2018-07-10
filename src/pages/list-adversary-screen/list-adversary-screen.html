@@ -36,16 +36,30 @@
               
               <ion-grid >
                 <ion-row >
-                  <ion-col> 
-                    
+                  <ion-col > 
+                    <div *ngIf="opPlayer.sex=='masculino'">
                     <img src="assets/imgs/cabo.png" *ngSwitchCase="'Cabo'" class="img" />
                     <img src="assets/imgs/sargento.png" *ngSwitchCase="'Sargento'" class="img" />
                     <img src="assets/imgs/tenente.png" *ngSwitchCase="'Tenente'" class="img" />
                     <img src="assets/imgs/capitao.png" *ngSwitchCase="'Capitão'" class="img" />
                     <img src="assets/imgs/almirante.png" *ngSwitchCase="'Almirante'" class="img" />
                     <h3 align="center"> <b> Lv. {{opPlayer.level}}  </b></h3>
-                    
+                    </div>
+
+                    <div *ngIf="opPlayer.sex=='feminino'">
+                      <img src="assets/imgs/caba.png" *ngSwitchCase="'Cabo'" class="img" />
+                      <img src="assets/imgs/sargenta.png" *ngSwitchCase="'Sargento'" class="img" />
+                      <img src="assets/imgs/tenenta.png" *ngSwitchCase="'Tenente'" class="img" />
+                      <img src="assets/imgs/capita.png" *ngSwitchCase="'Capitão'" class="img" />
+                      <img src="assets/imgs/almiranta.png" *ngSwitchCase="'Almirante'" class="img" />
+                      <h3 align="center">
+                        <b> Lv. {{opPlayer.level}} </b>
+                      </h3>
+                    </div>
+
+
                   </ion-col>
+                  
                   <ion-col>
   
                     <h4>
@@ -90,14 +104,27 @@
               <ion-row>
                 <ion-col>
         
+                <div *ngIf="opPlayer.sex=='masculino'">
                   <img src="assets/imgs/cabo.png" *ngSwitchCase="'Cabo'" class="img" />
                   <img src="assets/imgs/sargento.png" *ngSwitchCase="'Sargento'" class="img" />
                   <img src="assets/imgs/tenente.png" *ngSwitchCase="'Tenente'" class="img" />
                   <img src="assets/imgs/capitao.png" *ngSwitchCase="'Capitão'" class="img" />
                   <img src="assets/imgs/almirante.png" *ngSwitchCase="'Almirante'" class="img" />
                   <h3 align="center">
-                    <b> Lv. {{opPlayerR.level}} </b>
+                    <b> Lv. {{opPlayer.level}} </b>
                   </h3>
+                </div>
+                
+                <div *ngIf="opPlayer.sex=='feminino'">
+                  <img src="assets/imgs/caba.png" *ngSwitchCase="'Cabo'" class="img" />
+                  <img src="assets/imgs/sargenta.png" *ngSwitchCase="'Sargento'" class="img" />
+                  <img src="assets/imgs/tenenta.png" *ngSwitchCase="'Tenente'" class="img" />
+                  <img src="assets/imgs/capita.png" *ngSwitchCase="'Capitão'" class="img" />
+                  <img src="assets/imgs/almiranta.png" *ngSwitchCase="'Almirante'" class="img" />
+                  <h3 align="center">
+                    <b> Lv. {{opPlayer.level}} </b>
+                  </h3>
+                </div>
         
                 </ion-col>
                 <ion-col>
@@ -127,7 +154,7 @@
                   </ion-row>
         
                   <ion-row>
-                    <button ion-button (click)="setLocation(opPlayerR, 'rematch')" color="danger" round> Desafiar </button>
+                    <button ion-button (click)="setLocation(opPlayerR, 'rematch')" color="danger" round> Revanche </button>
         
                   </ion-row>
         

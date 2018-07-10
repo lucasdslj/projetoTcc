@@ -18,14 +18,29 @@
             <ion-card *ngFor="let dataP of dataPlayer">
               <ion-grid>
                 <ion-row >
-                  <ion-col>
-                    <div align="left" [ngSwitch]="dataP.patent">
+                  <ion-col [ngSwitch]="dataP.patent">
+                  
+                  
+                    <div *ngIf="dataP.sex=='masculino'">
                       <img src="assets/imgs/cabo.png" *ngSwitchCase="'Cabo'" class="img" />
                       <img src="assets/imgs/sargento.png" *ngSwitchCase="'Sargento'" class="img" />
                       <img src="assets/imgs/tenente.png" *ngSwitchCase="'Tenente'" class="img" />
                       <img src="assets/imgs/capitao.png" *ngSwitchCase="'Capitão'" class="img" />
                       <img src="assets/imgs/almirante.png" *ngSwitchCase="'Almirante'" class="img" />
-                      <h3 align="left"> <b> Lv. {{dataP.level}}   </b></h3>
+                      <h3 align="center">
+                        <b> Lv. {{dataP.level}} </b>
+                      </h3>
+                    </div>
+                  
+                    <div *ngIf="dataP.sex=='feminino'">
+                      <img src="assets/imgs/caba.png" *ngSwitchCase="'Cabo'" class="img" />
+                      <img src="assets/imgs/sargenta.png" *ngSwitchCase="'Sargento'" class="img" />
+                      <img src="assets/imgs/tenenta.png" *ngSwitchCase="'Tenente'" class="img" />
+                      <img src="assets/imgs/capita.png" *ngSwitchCase="'Capitão'" class="img" />
+                      <img src="assets/imgs/almiranta.png" *ngSwitchCase="'Almirante'" class="img" />
+                      <h3 align="center">
+                        <b> Lv. {{dataP.level}} </b>
+                      </h3>
                     </div>
                   </ion-col >
                   <ion-col class="col2" >
@@ -65,20 +80,31 @@
           <ion-col>
             <ion-card *ngFor="let opPlayer of dataOpponentPlayer">
               <ion-grid>
-                <ion-row>
-                  <ion-col >
-                    <div align="left" [ngSwitch]="opPlayer.patent">
-
+                <ion-row >
+                  <ion-col [ngSwitch]="opPlayer.patent" >
+                                          
+                      <div *ngIf="opPlayer.sex=='masculino'">
+                        <img src="assets/imgs/cabo.png" *ngSwitchCase="'Cabo'" class="img" />
+                        <img src="assets/imgs/sargento.png" *ngSwitchCase="'Sargento'" class="img" />
+                        <img src="assets/imgs/tenente.png" *ngSwitchCase="'Tenente'" class="img" />
+                        <img src="assets/imgs/capitao.png" *ngSwitchCase="'Capitão'" class="img" />
+                        <img src="assets/imgs/almirante.png" *ngSwitchCase="'Almirante'" class="img" />
+                        <h3 align="center">
+                          <b> Lv. {{opPlayer.level}} </b>
+                        </h3>
+                      </div>
                       
-                      <img src="assets/imgs/cabo.png"  *ngSwitchCase="'Cabo'" class="img" />
-                      <img src="assets/imgs/sargento.png" *ngSwitchCase="'Sargento'" class="img" />
-                      <img src="assets/imgs/tenente.png" *ngSwitchCase="'Tenente'"  class="img"/>
-                      <img src="assets/imgs/capitao.png" *ngSwitchCase="'Capitão'" class="img" />
-                      <img src="assets/imgs/almirante.png" *ngSwitchCase="'Almirante'" class="img" />
-                      <h3 align="left">
-                        <b> Lv. {{opPlayer.level}} </b>
-                      </h3>
-                    </div>
+                      <div *ngIf="opPlayer.sex=='feminino'">
+                        <img src="assets/imgs/caba.png" *ngSwitchCase="'Cabo'" class="img" />
+                        <img src="assets/imgs/sargenta.png" *ngSwitchCase="'Sargento'" class="img" />
+                        <img src="assets/imgs/tenenta.png" *ngSwitchCase="'Tenente'" class="img" />
+                        <img src="assets/imgs/capita.png" *ngSwitchCase="'Capitão'" class="img" />
+                        <img src="assets/imgs/almiranta.png" *ngSwitchCase="'Almirante'" class="img" />
+                        <h3 align="center">
+                          <b> Lv. {{opPlayer.level}} </b>
+                        </h3>
+                      </div>
+
                   </ion-col>
                   <ion-col class="col2">
                     <h3>
@@ -117,46 +143,49 @@
 
       <div #map id="map"></div>
 
-      <div cards>
+      <div >
         <ion-row>
-          <ion-col>
-            <ion-row>
+          
+            
+ 
 
-
-            </ion-row>
-            <ion-row>
-              <!--  <button ion-button (click)="open()" block>stop</button>  -->
-              <br>
+            <ion-col>
+            <br>
+              <!--  <button ion-button (click)="open()" block>stop</button>  {{imgP1}} {{imgP2}} -->
+              
               <h4><b>Bombas: {{amountBomb}}</b></h4>
               <h4><b>Tempo: {{time}}</b> </h4>
 
-            </ion-row>
+          </ion-col>
       
         
-        </ion-col>
+        
 
       
         <ion-col>
-          <div width="50%">
+         
               <form [formGroup]="formBattle" (ngSubmit)="playerBombThrow(coordinates)">
                 <ion-item>
                   <ion-label color="primary" floating>X</ion-label>
                   <ion-input type="number" [(ngModel)]="coordinates.x" name="coordinateX" formControlName="coordinateX"></ion-input>
                 </ion-item>
-                
+              
+              
                 <ion-item>
                   <ion-label color="primary" floating>Y</ion-label>
                   <ion-input type="number" [(ngModel)]="coordinates.y" name="coordinateY" formControlName="coordinateY"></ion-input>
                 </ion-item> 
-                <button [disabled]="formBattle.invalid" ion-button type="submit"  [disabled]="btnDisable" block>atirar</button>
-              
+                <button [disabled]="formBattle.invalid" ion-button type="submit" [disabled]="btnDisable" block>atirar</button>
+             
               </form>
             <!--  <button ion-button (click)="test()" block>stop</button>-->
             
-        
-            </div>
+          
+            
+            
         </ion-col>
       </ion-row>
+      
 
     </div>
     <!--  <button ion-button navPop >Voltar!</button> -->

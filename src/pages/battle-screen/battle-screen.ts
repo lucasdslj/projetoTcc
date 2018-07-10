@@ -21,6 +21,7 @@ import { ModalBattleScreenPage } from '../modal-battle-screen/modal-battle-scree
 
 //import { JsonPipe } from '@angular/common';
 import { mapStyle } from './mapStyle';
+import { empty } from 'rxjs/Observer';
 
 declare var google;
 
@@ -65,6 +66,10 @@ export class BattleScreenPage {
 
   //form
   public formBattle: any;
+  public loading:any;
+  public imgP1 = 'no';
+  public imgP2 = 'no';
+  public timeStart = false;
 
   constructor(public navCtrl: NavController,  public navParams: NavParams, public http: Http, public formBuilder: FormBuilder, 
     private toastCtrl: ToastController, public modalCtrl: ModalController, private nativeAudio: NativeAudio,
@@ -440,7 +445,7 @@ adversaryBombTrow(level){
           }
           this.markerBoardBomb(this.map, this.battleData[0][coordBomb[0]][coordBomb[1]][0], this.battleData[0][coordBomb[0]][coordBomb[1]][1], 'bombWater4.gif', '');
         }
-        break;
+        
       
 
       default:{///teste
@@ -642,20 +647,25 @@ ionViewDidEnter() {
     this.time = this.subTime(timeStamp, 0);
     
     //tempo contador
+
+    
     setTimeout(() => {
    
     this.setInter = setInterval(() => {
+      if (this.timeStart == true) {
+        this.time = this.subTime(timeStamp, a);
+        a += 1;
+        if (this.time == "00:00") {
+          //modal
+          this.timeBreak = true;
+          this.openModalScreenDefeat('defeat', "O Tempo Acabou!", this.user_name);
 
-      this.time = this.subTime(timeStamp, a);
-      a += 1;
-      if(this.time=="00:00"){
-        //modal
-        this.timeBreak == true;
-        this.openModalScreenDefeat('defeat',"O Tempo Acabou!", this.user_name);
-
-        console.log("Tempo encerrado");//teste
-        clearInterval(this.setInter);
+          console.log("Tempo encerrado");//teste
+          clearInterval(this.setInter);
+        }
       }
+
+      
 
     }, 1000);
     
@@ -696,6 +706,7 @@ ionViewDidEnter() {
     this.nativeAudio.stop('soundtrack');
     this.trackerPause = true;
     clearInterval(this.setInter);
+    this.loading.dismiss();
   }
 
 
@@ -745,15 +756,15 @@ open(){
     var i, j;
     this.battleData = [];
 
-    let loading = this.loadingCtrl.create({
+    this.loading = this.loadingCtrl.create({
       spinner: 'dots',
       content: 'carregando'
     });
-    loading.present();
+    this.loading.present();
 
     //net
     let timeOutNetwork = setTimeout(() => {
-      loading.dismiss();
+      this.loading.dismiss();
       this.alertNetwork('Problemas com a conexão à internet :(', 'Ohh não!!');
 
     }, 15000);
@@ -769,7 +780,7 @@ open(){
           this.alertBattleImpossible();
           clearInterval(this.setInter);
          
-          loading.dismiss();
+          this.loading.dismiss();
           clearInterval(inter);
           
           
@@ -814,14 +825,17 @@ open(){
 
         this.map = this.createMap(this.battleData[0], this.battleData[5], this.battleData[6], this.battleData[1], this.battleData[2]);
        
-       
-        // verofocação de término de carregamento
-        var inter = setTimeout(() => {
+        
+        // verificação de término de carregamento
+        var inter = setInterval(() => {
         if (this.map.controls.length > 0) {
-          loading.dismiss();
+          this.loading.dismiss();
           clearInterval(inter);
-        }
+          this.timeStart = true;
+
+          }
         }, 200);
+
 
       }
     });
@@ -832,7 +846,7 @@ open(){
 
     var map: any;
     var edgeBoundsPoints = [];   
-    var position, marker, edgeBoard, markerIcon, aux = board.length - 1, i; 
+    var position, marker, edgeBoard, markerIcon, aux = board.length - 1, i, label; 
     var colorBoard = '#00BFFF', colorAxis = '#000000';
    
     //Definindo pontos da borda do Tabuleiro e auxiliando o cálculo do baricentro
@@ -852,7 +866,7 @@ open(){
 
     //opções do mapa 
     const mapOptions = {
-      zoom: 20,
+      zoom: 18,
      // minZoom: minZ,
      // maxZoom: 18,
       center: edgeBounds.getCenter(),
@@ -916,11 +930,12 @@ open(){
             position = new google.maps.LatLng(axisY[0][j], axisX[0][i]);  
             markerIcon = { url: 'assets/imgs/label.png', labelOrigin: new google.maps.Point(8, 25) };
           }         
-
+          label = axisX[1][i].toString();
+          label = label.replace('.', ',');
           marker = new google.maps.Marker({
             position: position,
             map: map,
-            label: { text: axisX[1][i].toString(), color: colorAxis, fontSize: '12px', fontWeight: '475' },
+            label: { text: label, color: '#FF0000', fontSize: '12px', fontWeight: '475' },
             icon: markerIcon
           });
         }      
@@ -931,12 +946,13 @@ open(){
         for (i = 0; i < board.length; i++) {
           if(axisY[1][i] != 0){
             position = new google.maps.LatLng(axisY[0][i], axisX[0][j]);
-
+            label = axisY[1][i].toString();
+            label = label.replace('.', ',');
             marker = new google.maps.Marker({
               position: position,
               map: map,
 
-              label: { text: axisY[1][i].toString(), fontSize: '12px', fontWeight: '475' },
+              label: { text: label, color: '#FF0000', fontSize: '12px', fontWeight: '475' },
               icon: {url: 'assets/imgs/label.png', labelOrigin: new google.maps.Point(0, 15 ) }
             });
           }
@@ -945,7 +961,7 @@ open(){
     }
 
     //Posicionando todos os pontos na tela
-    map.fitBounds(edgeBounds, -4);
+    map.fitBounds(edgeBounds, 0);
 
     //Controle de Zoom mínimo e máximo
     i = 0; //verificar utilização
@@ -965,20 +981,78 @@ open(){
       }
       else {
         //map.setCenter(edgeBounds.getCenter());
-        map.fitBounds(edgeBounds, -4);
+        map.fitBounds(edgeBounds, 0);
       }
     });
 
     //fazer switch para alterar figura do barco
 
-    //Platagem Das Embarcações Players
-    this.markerBoard(map, coordPlayer1[0], coordPlayer1[1], 'barco1.png', google.maps.Animation.DROP);
-    this.markerBoard(map, coordPlayer2[0], coordPlayer2[1], 'barco2.png', google.maps.Animation.DROP);
+    //Platagem Das Embarcações Players 
+     
+    this.assetsP1();
+    this.assetsP2();
+    var inter = setInterval(() => {
+        if ((this.imgP1 != 'no') && (this.imgP2 != 'no')) {
+          this.markerBoard(map, coordPlayer1[0], coordPlayer1[1], this.imgP1, google.maps.Animation.DROP);
+          this.markerBoard(map, coordPlayer2[0], coordPlayer2[1], this.imgP2, google.maps.Animation.DROP);
+          clearInterval(inter);
+        }else{
+          this.assetsP1();
+          this.assetsP2();
+        }
+    }, 200);
    
+ 
     return  map;
 
     
   }
+
+  assetsP1(){
+    
+    switch (parseInt(this.dataPlayer[0].level)) {
+      case 1:
+        this.imgP1 = 'barco1.png';
+       // break;
+      case 2:
+        this.imgP1 = 'barco2.png';
+       // break;
+      case 3:
+        this.imgP1 = 'barco3.png';
+       // break;
+      case 4:
+        this.imgP1 = 'barco4.png';
+        //break;
+      case 5:
+        this.imgP1 = 'barco5.png';
+
+    }
+    
+  }
+
+  assetsP2() {
+    
+    switch (parseInt(this.dataOpponentPlayer[0].level)) {
+      case 1:
+        this.imgP2 = 'barco1P.png';
+      //  break;
+      case 2:
+        this.imgP2 = 'barco2P.png';
+       // break;
+      case 3:
+        this.imgP2 = 'barco3P.png';
+       // break;
+      case 4:
+        this.imgP2 = 'barco4P.png';
+       // break;
+      case 5:
+        this.imgP2 = 'barco5P.png';
+
+    }
+    
+    
+  }
+  
 
 
 }
